@@ -17,7 +17,7 @@ export default function PlayerCard({ player }: { player: Player }) {
         <Link href={`/players/${player.id}`} className="relative group overflow-hidden rounded-lg shadow-lg bg-black">
             <div className="w-full h-80 relative">
                 <Image
-                    src={`http://127.0.0.1:8000${player.photo}`}
+                    src={`${process.env.NEXT_PUBLIC_BASE_URL}${player.photo}`}
                     alt={player.name}
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
