@@ -1,0 +1,30 @@
+# dependencies
+node_modules/
+
+# build output
+.next/
+out/
+dist/
+.DS_Store
+
+# environment variables
+.env
+.env.local
+.env.*.local
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# system files
+.DS_Store
+
+# optional IDE/project files
+.vscode/
+.idea/
+
+# lock files (if not using npm)
+pnpm-lock.yaml
+yarn.lock
+
