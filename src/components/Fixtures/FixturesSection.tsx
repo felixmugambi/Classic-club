@@ -28,7 +28,7 @@ const FixturesSection = () => {
   useEffect(() => {
     const fetchFixtures = async () => {
       try {
-        const res = await API.get("/fixtures/fixtures/");
+        const res = await API.get("/public-fixtures/");
         const allFixtures: APIFixture[] = res.data;
 
         // Filter for upcoming (not completed)
@@ -107,7 +107,7 @@ const FixturesSection = () => {
 
               const heading =
                 fixture.game_type === "league"
-                  ? `ZONE ${fixture.zone} | MATCHDAY ${fixture.match_day}`
+                  ? `ZONE A | MATCHDAY ${fixture.match_day}`
                   : "";
 
               const subheading =

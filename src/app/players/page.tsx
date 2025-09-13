@@ -1,4 +1,3 @@
-// pages/players/index.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -13,14 +12,26 @@ type Player = {
   photo: string;
 };
 
-const PlayerPage = () => {
-
-const [players, setPlayers] = useState<{ [position: string]: Player[] }>({});
+export default function PlayerPage() {
+  const [players, setPlayers] = useState<{ [position: string]: Player[] }>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     API.get('/players/public/')
-      .then((res) => setPlayers(res.data))
+      .then((res) => {
+        const data: Player[] = res.data;
+
+        // Group players by position
+        const grouped = data.reduce<{ [pos: string]: Player[] }>((acc, player) => {
+          if (!acc[player.position]) {
+            acc[player.position] = [];
+          }
+          acc[player.position].push(player);
+          return acc;
+        }, {});
+
+        setPlayers(grouped);
+      })
       .catch((err) => console.error('Error fetching players', err))
       .finally(() => setLoading(false));
   }, []);
@@ -28,19 +39,16 @@ const [players, setPlayers] = useState<{ [position: string]: Player[] }>({});
   return (
     <div className="bg-white min-h-screen">
       <h1 className="text-4xl font-bold text-center py-6">Our Squad</h1>
-  
+
       {loading ? (
         <p className="text-center text-gray-500">Loading players...</p>
       ) : Object.keys(players).length === 0 ? (
         <div className="text-center py-10 text-gray-600 text-lg">
-           No players found!
+          No players found!
         </div>
       ) : (
         <PlayerList players={players} />
       )}
     </div>
   );
-  
-};
-
-export default PlayerPage;
+}

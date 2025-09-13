@@ -9,6 +9,7 @@ import ProtectedRoute from '../../../../../components/protect/ProtectedRoute';
 export default function EditPlayerPage() {
   const router = useRouter();
   const { id } = useParams(); // This gets the dynamic route ID
+  const [existingPhoto, setExistingPhoto] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -33,11 +34,11 @@ export default function EditPlayerPage() {
           age: data.age.toString(),
           photo: null,
         });
+        setExistingPhoto(data.photo); // store the current photo URL
       } catch (err) {
         setError('Failed to load player');
       }
     };
-
     fetchPlayer();
   }, [id]);
 
@@ -96,7 +97,25 @@ export default function EditPlayerPage() {
             <option value="Forward">Forward</option>
           </select>
           <input type="number" name="age" placeholder="Age" value={formData.age} onChange={handleChange} className="w-full border p-2 rounded" required />
-          <input type="file" name="photo" onChange={handleChange} className="w-full" accept="image/*" />
+
+          {existingPhoto && (
+            <div className="mb-4">
+              <p className="text-sm text-gray-500">Current Photo:</p>
+              <img
+                src={existingPhoto}
+                alt="Player photo"
+                className="w-32 h-32 object-cover rounded mt-2 border"
+              />
+            </div>
+          )}
+          <input
+            type="file"
+            name="photo"
+            onChange={handleChange}
+            className="w-full"
+            accept="image/*"
+          />
+
           {error && <p className="text-red-500 text-sm">{error}</p>}
           <button type="submit" disabled={loading} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
             {loading ? 'Updating...' : 'Update Player'}

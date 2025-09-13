@@ -32,12 +32,11 @@ const SignupPage = () => {
         password,
       });
 
-      console.log("Signup successful:", res.data);
+      
       toast.success("Signup successful! Please check your email.");
 
       localStorage.setItem("pendingEmail", email);
-      router.push("/auth/confirm-email"); // or whatever your confirm-email page is
-
+      router.push("/auth/confirm-email"); 
     } catch (err: any) {
       console.error("Signup error:", err.response?.data || err.message);
 

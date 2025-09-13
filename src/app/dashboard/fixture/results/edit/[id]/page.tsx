@@ -1,17 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import API from '../../../../../api/axios';
-import ProtectedRoute from '../../../../../components/protect/ProtectedRoute';
+import API from '../../../../../../api/axios';
+import ProtectedRoute from '../../../../../../components/protect/ProtectedRoute';
 
-export default function CreateResultPage() {
+export default function EditResultPage() {
+  const { id } = useParams();
   const router = useRouter();
 
-  const [fixtures, setFixtures] = useState<any[]>([]);
   const [formData, setFormData] = useState({
-    fixture: '',
+    fixture: '', // will be fixture ID
     home_score: '',
     away_score: '',
     notes: '',
@@ -20,22 +20,47 @@ export default function CreateResultPage() {
   const [homeScorers, setHomeScorers] = useState<any[]>([]);
   const [awayScorers, setAwayScorers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [fixtures, setFixtures] = useState<{ id: number; opponent: string; match_date: string }[]>([]);
 
+  // Fetch fixtures
   useEffect(() => {
-    const fetchCompletedFixtures = async () => {
+    const fetchFixtures = async () => {
       try {
-        const res = await API.get('/fixtures/?status=completed');
-        const unscored = res.data.filter((f: any) => !f.result);
-        setFixtures(unscored);
+        const res = await API.get('/fixtures/');
+        setFixtures(res.data);
       } catch {
-        toast.error('Failed to fetch fixtures');
+        toast.error("Failed to load fixtures");
+      }
+    };
+    fetchFixtures();
+  }, []);
+
+  // Fetch result by ID
+  useEffect(() => {
+    const fetchResult = async () => {
+      try {
+        const res = await API.get(`/results/${id}/`);
+        const data = res.data;
+
+        setFormData({
+          fixture: data.fixture.id, // fixture ID
+          home_score: String(data.home_score),
+          away_score: String(data.away_score),
+          notes: data.notes || '',
+        });
+
+        setHomeScorers(data.classic_scorers || []);
+        setAwayScorers(data.away_scorers || []);
+      } catch {
+        setError('Failed to fetch result');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCompletedFixtures();
-  }, []);
+    if (id) fetchResult();
+  }, [id]);
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -50,24 +75,27 @@ export default function CreateResultPage() {
 
   const generateScorerFields = (team: 'home' | 'away', score: number) => {
     const current = team === 'home' ? homeScorers : awayScorers;
-    const updated = Array.from({ length: score }, (_, i) => current[i] || { name: '', minute: '', type: 'Goal' });
+    const updated = Array.from(
+      { length: score },
+      (_, i) => current[i] || { name: '', minute: '', type: 'Goal' }
+    );
     team === 'home' ? setHomeScorers(updated) : setAwayScorers(updated);
   };
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    if (!formData.fixture) return toast.error("Please select a fixture");
-
     const parsedHome = parseInt(formData.home_score);
     const parsedAway = parseInt(formData.away_score);
 
-    if (homeScorers.length !== parsedHome) return toast.error("Classic FC scorers count mismatch");
-    if (awayScorers.length !== parsedAway) return toast.error("Away team scorers count mismatch");
+    if (homeScorers.length !== parsedHome)
+      return toast.error('Classic FC scorers count mismatch');
+    if (awayScorers.length !== parsedAway)
+      return toast.error('Away team scorers count mismatch');
 
     try {
-      await API.post('/results/', {
-        fixture: formData.fixture,
+      await API.put(`/results/${id}/`, {
+        fixture: formData.fixture, // must be ID
         home_score: parsedHome,
         away_score: parsedAway,
         notes: formData.notes,
@@ -75,13 +103,13 @@ export default function CreateResultPage() {
         away_scorers: awayScorers,
       });
 
-      toast.success("Result saved!");
-      router.push("/dashboard/fixture");
+      toast.success('Result updated!');
+      router.push('/dashboard/results');
     } catch (err: any) {
       const errorMsg =
         err.response?.data?.non_field_errors?.[0] ||
         Object.values(err.response?.data || {}).flat().join(', ') ||
-        'Failed to save result';
+        'Failed to update result';
       toast.error(errorMsg);
     }
   };
@@ -89,29 +117,32 @@ export default function CreateResultPage() {
   return (
     <ProtectedRoute allowedGroups={['Fixtures_Manager']}>
       <div className="max-w-2xl mx-auto bg-white p-6 rounded shadow">
-        <h2 className="text-xl font-bold mb-4">Add Match Result</h2>
+        <h2 className="text-xl font-bold mb-4">Edit Match Result</h2>
 
         {loading ? (
-          <p className="text-gray-500">Loading fixtures...</p>
-        ) : fixtures.length === 0 ? (
-          <p className="text-gray-500">No completed matches pending results.</p>
+          <p className="text-gray-500">Loading...</p>
+        ) : error ? (
+          <p className="text-red-500">{error}</p>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
-            <select
-              name="fixture"
-              value={formData.fixture}
-              onChange={handleChange}
-              className="w-full border p-2 rounded"
-              required
-            >
-              <option value="">Select Completed Fixture</option>
-              {fixtures.map((f) => (
-                <option key={f.id} value={f.id}>
-                  {f.is_home ? 'Classic FC' : f.opponent} vs {f.is_home ? f.opponent : 'Classic FC'} | {f.match_date}
-                </option>
-              ))}
-            </select>
+            {/* Fixture Select */}
+            <div className="mb-3">
+              <label className="block text-sm font-medium">Fixture</label>
+              <select
+                name="fixture"
+                value={formData.fixture}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+              >
+                {fixtures.map((f) => (
+                  <option key={f.id} value={f.id}>
+                    Match Day {f.id} - {f.opponent} ({f.match_date})
+                  </option>
+                ))}
+              </select>
+            </div>
 
+            {/* Scores */}
             <div className="grid grid-cols-2 gap-4">
               <input
                 type="number"
@@ -142,6 +173,7 @@ export default function CreateResultPage() {
               />
             </div>
 
+            {/* Home Scorers */}
             {homeScorers.length > 0 && (
               <div>
                 <h4 className="font-semibold mt-4 mb-2">Home Team Scorers</h4>
@@ -178,6 +210,7 @@ export default function CreateResultPage() {
               </div>
             )}
 
+            {/* Away Scorers */}
             {awayScorers.length > 0 && (
               <div>
                 <h4 className="font-semibold mt-4 mb-2">Away Team Scorers</h4>
@@ -218,7 +251,7 @@ export default function CreateResultPage() {
               name="notes"
               value={formData.notes}
               onChange={handleChange}
-              placeholder="Optional notes (e.g. red cards, injuries)"
+              placeholder="Optional notes"
               className="w-full border p-2 rounded"
             />
 
@@ -226,7 +259,7 @@ export default function CreateResultPage() {
               type="submit"
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
             >
-              Submit Result
+              Save Changes
             </button>
           </form>
         )}

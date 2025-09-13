@@ -11,7 +11,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
   const { user, loading } = useAuth();
 
-  const [authorized, setAuthorized] = useState(false); // 👈 controls render
+  const [authorized, setAuthorized] = useState<boolean | null>(null); 
+  // null = not decided yet, true = allowed, false = denied
 
   const subDashboardPaths = ['/dashboard/player', '/dashboard/blog', '/dashboard/fixture'];
   const isSubDashboard = subDashboardPaths.some((path) => pathname.startsWith(path));
@@ -20,6 +21,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     if (!loading) {
       if (!user) {
         toast.error('Please log in to access the dashboard.');
+        setAuthorized(false);
         router.push('/auth/login');
       } else if (
         !user.groups.includes('Admin') &&
@@ -28,19 +30,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         !user.groups.includes('Fixtures_Manager')
       ) {
         toast.error('You are not authorized to access the dashboard.');
+        setAuthorized(false);
         router.push('/unauthorized');
       } else {
-        setAuthorized(true); // ✅ allow rendering only if authorized
+        setAuthorized(true);
       }
     }
   }, [user, loading, router]);
 
-  if (loading || !authorized) return null; // 🔒 Avoid render until ready
+  // Loading screen (while auth state is being checked)
+  if (loading || authorized === null) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-red-400">
+        <p className="text-lg font-semibold">Checking permissions...</p>
+      </div>
+    );
+  }
 
+  // If not authorized, don’t render children
+  if (!authorized) return null;
+
+  // ✅ Render dashboard only if authorized
   return (
-    <div className="flex min-h-screen">
-      {!isSubDashboard && <GroupSidebar />}
-      <main className="flex-1 p-4">{children}</main>
-    </div>
+    <div className="flex min-h-screen relative">
+    {!isSubDashboard && <GroupSidebar />}
+    <main className="flex-1 p-4">{children}</main>
+  </div>
   );
 }

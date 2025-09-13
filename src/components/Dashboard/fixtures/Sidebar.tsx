@@ -7,6 +7,7 @@ import { FiEdit, FiPlusCircle, FiLogOut } from 'react-icons/fi';
 const navItems = [
   { name: 'All Fixtures', href: '/dashboard/fixture', icon: <FiEdit /> },
   { name: 'Create Fixture', href: '/dashboard/fixture/create', icon: <FiPlusCircle /> },
+  { name: 'All Results', href: '/dashboard/fixture/results', icon: <FiEdit /> },
   { name: 'Create Result', href: '/dashboard/fixture/results/create', icon: <FiPlusCircle /> },
 ];
 

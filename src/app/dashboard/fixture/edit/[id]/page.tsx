@@ -28,7 +28,7 @@ export default function EditFixturePage() {
   useEffect(() => {
     const fetchFixture = async () => {
       try {
-        const res = await API.get(`/fixtures/fixtures/${id}/`);
+        const res = await API.get(`/fixtures/${id}/`);
         const data = res.data;
         setFormData({
           game_type: data.game_type,
@@ -61,7 +61,7 @@ export default function EditFixturePage() {
     setError('');
 
     try {
-      await API.put(`/fixtures/fixtures/${id}/`, formData);
+      await API.put(`/fixtures/${id}/`, formData);
       console.log(formData)
       toast.success('Fixture updated successfully');
       router.push('/dashboard/fixture');

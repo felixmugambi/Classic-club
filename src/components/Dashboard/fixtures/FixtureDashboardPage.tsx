@@ -9,7 +9,7 @@ export default function FixtureDashboardPage() {
   const [fixtures, setFixtures] = useState([]);
 
   useEffect(() => {
-    API.get('/fixtures/fixtures/')
+    API.get('/fixtures/')
       .then((res) => setFixtures(res.data))
       .catch(() => setFixtures([]));
   }, []);
@@ -31,7 +31,7 @@ export default function FixtureDashboardPage() {
                 <p>
                   {fix.game_type === 'friendly'
                     ? (fix.is_home ? 'Home' : 'Away')
-                    : <>Zone {fix.zone} | {fix.is_home ? 'Home' : 'Away'}</>
+                    : <>Zone A | {fix.is_home ? 'Home' : 'Away'}</>
                   }
                 </p>
               </div>

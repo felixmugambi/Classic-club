@@ -3,6 +3,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { slugify } from '../helper/slugify';
 
 type Player = {
     id: number;
@@ -14,7 +15,7 @@ type Player = {
 
 export default function PlayerCard({ player }: { player: Player }) {
     return (
-        <Link href={`/players/${player.id}`} className="relative group overflow-hidden rounded-lg shadow-lg bg-black">
+        <Link href={`/players/details/${slugify(player.name)}`} className="relative group overflow-hidden rounded-lg shadow-lg bg-black">
             <div className="w-full h-80 relative">
                 <Image
                     src={player.photo}

@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { FaChevronDown, FaFutbol } from 'react-icons/fa';
 import API from '../../api/axios';
-import { useRouter } from 'next/navigation';
 
 type Fixture = {
   id: number;
@@ -11,15 +11,40 @@ type Fixture = {
   match_time: string;
   location: string;
   is_home: boolean;
-  zone: string;
   match_day: number;
   status: string;
   game_type: string;
 };
 
+type Result = {
+  id: number;
+  fixture: Fixture;
+  home_score: number;
+  away_score: number;
+  notes?: string;
+  home_scorers?: { name: string; minute: string; type: string }[];
+  away_scorers?: { name: string; minute: string; type: string }[];
+};
+
 type GroupedFixtures = {
   [month: string]: Fixture[];
 };
+
+type Standing = {
+  id: number;
+  zone: string;
+  position: number;
+  team: string;
+  played: number;
+  wins: number;
+  draws: number;
+  losses: number;
+  gf: number;
+  ga: number;
+  gd: number;
+  points: number;
+};
+
 
 const getFormatted = (dateStr: string, timeStr: string) => {
   const dt = new Date(`${dateStr}T${timeStr}`);
@@ -36,32 +61,42 @@ const getFormatted = (dateStr: string, timeStr: string) => {
 
 export default function AllMatchesPage() {
   const [fixtures, setFixtures] = useState<Fixture[]>([]);
+  const [results, setResults] = useState<Result[]>([]);
   const [filtered, setFiltered] = useState<GroupedFixtures>({});
   const [loading, setLoading] = useState(true);
 
   const [monthFilter, setMonthFilter] = useState('');
   const [gameTypeFilter, setGameTypeFilter] = useState('');
   const [venueFilter, setVenueFilter] = useState('');
-  const router = useRouter()
+
+  const [activeTab, setActiveTab] = useState<'fixtures' | 'results' | 'table'>('fixtures');
+  const [showResultsDetails, setShowResultsDetails] = useState(false)
+  const [standings, setStandings] = useState<Standing[]>([]);
+
 
 
   useEffect(() => {
-    const fetchFixtures = async () => {
+    const fetchData = async () => {
       try {
-        const res = await API.get('/fixtures/fixtures/');
-        setFixtures(res.data);
+        const [fixRes, resRes, tableRes] = await Promise.all([
+          API.get('/public-fixtures/'),
+          API.get('/public-results/'),
+          API.get('/standings/zone-a/')
+        ]);
+        setFixtures(fixRes.data);
+        setResults(resRes.data);
+        setStandings(tableRes.data)
       } catch (err) {
-        console.error('Failed to load fixtures', err);
+        console.error('Failed to load data', err);
       } finally {
         setLoading(false);
       }
     };
-    fetchFixtures();
+    fetchData();
   }, []);
 
   useEffect(() => {
     const group: GroupedFixtures = {};
-
     fixtures.forEach(fix => {
       const { month } = getFormatted(fix.match_date, fix.match_time);
 
@@ -74,107 +109,196 @@ export default function AllMatchesPage() {
         group[month].push(fix);
       }
     });
-
     setFiltered(group);
   }, [fixtures, monthFilter, gameTypeFilter, venueFilter]);
 
   const months = Array.from(new Set(fixtures.map(fix => getFormatted(fix.match_date, fix.match_time).month)));
 
-
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
-      {/* Header */}
+      {/* Tabs */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-        <h2 className="text-2xl font-bold text-black">All Fixtures by Month</h2>
+        <h2 className="text-2xl font-bold text-black">Matches</h2>
         <div className="flex gap-3">
-          <button onClick={() => router.push('/results')} className="bg-gray-100 px-4 py-2 rounded hover:bg-gray-200 text-sm">Results</button>
-          <button className="bg-gray-100 px-4 py-2 rounded hover:bg-gray-200 text-sm">Table</button>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded text-sm">Add to Calendar</button>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="flex flex-wrap gap-4 mb-8">
-        <select
-          value={monthFilter}
-          onChange={(e) => setMonthFilter(e.target.value)}
-          className="border rounded px-3 py-2 text-sm"
-        >
-          <option value="">All Months</option>
-          {months.map((m) => (
-            <option key={m} value={m}>{m}</option>
+          {['fixtures', 'results', 'table'].map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab as any)}
+              className={`px-4 py-2 rounded text-sm ${activeTab === tab ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200'
+                }`}
+            >
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
           ))}
-        </select>
-
-        <select
-          value={gameTypeFilter}
-          onChange={(e) => setGameTypeFilter(e.target.value)}
-          className="border rounded px-3 py-2 text-sm"
-        >
-          <option value="">All Types</option>
-          <option value="league">League</option>
-          <option value="friendly">Friendly</option>
-          <option value="cup">Cup</option>
-        </select>
-
-        <select
-          value={venueFilter}
-          onChange={(e) => setVenueFilter(e.target.value)}
-          className="border rounded px-3 py-2 text-sm"
-        >
-          <option value="">All Venues</option>
-          <option value="home">Home</option>
-          <option value="away">Away</option>
-        </select>
+        </div>
       </div>
 
-      {/* Fixtures */}
-      {loading ? (
-        <p className="text-center text-gray-500">Loading fixtures...</p>
-      ) : Object.keys(filtered).length === 0 ? (
-        <div className="text-center text-gray-500 mt-20">
-          <p className="text-lg font-medium mb-2">No data available for the selected filters.</p>
-          <p className="text-sm">Try changing your selected filters.</p>
-        </div>
-      ) : (
-        Object.entries(filtered).map(([month, items]) => (
-          <div key={month} className="mb-10">
-            <h3 className="text-xl font-semibold text-clubRed mb-4">{month}</h3>
-            <div className="space-y-4">
-              {items.map((fix) => {
-                const { date, time } = getFormatted(fix.match_date, fix.match_time);
-                const home = fix.is_home ? 'Classic FC' : fix.opponent;
-                const away = fix.is_home ? fix.opponent : 'Classic FC';
+      {/* Filters for Fixtures and Results */}
+      {(activeTab === 'fixtures' || activeTab === 'results') && (
+        <div className="flex flex-wrap gap-4 mb-8">
+          <select value={monthFilter} onChange={e => setMonthFilter(e.target.value)} className="border rounded px-3 py-2 text-sm">
+            <option value="">All Months</option>
+            {months.map(m => <option key={m} value={m}>{m}</option>)}
+          </select>
 
-                return (
-                  <div key={fix.id} className="bg-white p-4 shadow rounded border flex justify-between flex-wrap md:flex-nowrap">
-                    <div className="flex-1">
-                      <p className="font-bold text-black">{date} | {time}</p>
-                      <p className="text-sm text-gray-600 mt-1">{home} <span className="text-gray-400">vs</span> {away}</p>
-                      <p className="text-xs text-gray-500 mt-1 uppercase tracking-wide">
-                        {fix.game_type === 'league'
-                          ? `League Game - Zone ${fix.zone} - Matchday ${fix.match_day}`
-                          : fix.game_type === 'friendly'
-                            ? 'Friendly Match'
-                            : 'Cup Match'}
-                      </p>
+          <select value={gameTypeFilter} onChange={e => setGameTypeFilter(e.target.value)} className="border rounded px-3 py-2 text-sm">
+            <option value="">All Types</option>
+            <option value="league">League</option>
+            <option value="friendly">Friendly</option>
+            <option value="cup">Cup</option>
+          </select>
+
+          <select value={venueFilter} onChange={e => setVenueFilter(e.target.value)} className="border rounded px-3 py-2 text-sm">
+            <option value="">All Venues</option>
+            <option value="home">Home</option>
+            <option value="away">Away</option>
+          </select>
+        </div>
+      )}
+
+      {/* Fixtures Tab */}
+      {activeTab === 'fixtures' && (
+        <>
+          {loading ? (
+            <p className="text-center text-gray-500">Loading fixtures...</p>
+          ) : Object.keys(filtered).length === 0 ? (
+            <p className="text-center text-gray-500 mt-20">No fixtures available</p>
+          ) : (
+            Object.entries(filtered).map(([month, items]) => (
+              <div key={month} className="mb-10">
+                <h3 className="text-xl font-semibold text-clubRed mb-4">{month}</h3>
+                <div className="space-y-4">
+                  {items.map(fix => {
+                    const { date, time } = getFormatted(fix.match_date, fix.match_time);
+                    const home = fix.is_home ? 'Classic FC' : fix.opponent;
+                    const away = fix.is_home ? fix.opponent : 'Classic FC';
+                    return (
+                      <div key={fix.id} className="bg-white p-4 shadow rounded border flex justify-between flex-wrap md:flex-nowrap">
+                        <div>
+                          <p className="font-bold text-black">{date} | {time}</p>
+                          <p className="text-sm text-gray-600 mt-1">{home} <span className="text-gray-400">vs</span> {away}</p>
+                        </div>
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${fix.status === 'completed' ? 'bg-green-600 text-white'
+                          : fix.status === 'postponed' ? 'bg-yellow-500 text-white'
+                            : 'bg-blue-600 text-white'
+                          }`}>
+                          {fix.status}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))
+          )}
+        </>
+      )}
+
+      {/* Results Tab */}
+      {activeTab === 'results' && (
+        <div>
+          <h3 className="text-xl font-semibold mb-4">Match Results</h3>
+          {loading ? (
+            <p className="text-center text-gray-500">Loading results...</p>
+          ) : results.length === 0 ? (
+            <p className="text-center text-gray-500 mt-20">No results available</p>
+          ) : (
+            results.map(res => {
+              const { date, time } = getFormatted(res.fixture.match_date, res.fixture.match_time);
+              const home = res.fixture.is_home ? 'Classic FC' : res.fixture.opponent;
+              const away = res.fixture.is_home ? res.fixture.opponent : 'Classic FC';
+              return (
+                <div key={res.id} className="bg-white p-4 shadow rounded border mb-4">
+                  <p className="font-bold text-black">{date} | {time}</p>
+                  <p className="text-xs text-gray-500 mb-2">
+                    {res.fixture.game_type === 'league'
+                      ? `League Game - Matchday ${res.fixture.match_day}`
+                      : res.fixture.game_type === 'friendly'
+                        ? 'Friendly Match'
+                        : 'Cup Match'}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-xl font-semibold">{home}</p>
+                    <div className="flex items-center justify-center">
+                      <p className="bg-gray-100 px-2 mx-2 text-lg font-semibold">{res.home_score}</p>
+                      <p className="bg-gray-100 px-2 mx-2 text-lg font-semibold">{res.away_score}</p>
                     </div>
-                    <div className="text-sm mt-2 md:mt-0 text-right">
-                      <span className={`px-3 py-1 rounded-full text-white text-xs font-semibold ${fix.status === 'completed'
-                        ? 'bg-green-600'
-                        : fix.status === 'postponed'
-                          ? 'bg-yellow-500'
-                          : 'bg-blue-600'
-                        }`}>
-                        {fix.status}
-                      </span>
-                    </div>
+                    <p className="text-xl font-semibold">{away}</p>
                   </div>
-                );
-              })}
-            </div>
-          </div>
-        ))
+                  <div className="flex justify-center items-center py-2 cursor-pointer"
+                    onClick={() => setShowResultsDetails(prev => !prev)}>
+                    <FaChevronDown className={`text-2xl transition-transform duration-200 ${showResultsDetails ? 'rotate-180' : ''
+                      }`} />
+                  </div>
+                  {showResultsDetails &&
+                    <div className='flex items-center justify-between'>
+                      <div>
+                        {res.home_scorers?.map((scorer, index) => (
+                          <span key={index} className='flex items-center text-lg'>
+                            <FaFutbol className='w-4 h-4' />
+                            {scorer.name} {scorer.minute}</span>
+                        ))}
+                      </div>
+                      <p>FT</p>
+                      <div>
+                        {res.away_scorers?.map((scorer, index) => (
+                          <span key={index} className='flex ml-2 items-center  text-lg'>
+                            <FaFutbol className='w-4 h-4' />
+                            {scorer.name} {scorer.minute}</span>
+                        ))}
+                      </div>
+
+                    </div>
+                  }
+                </div>
+              );
+            })
+          )}
+        </div>
+      )}
+
+      {/* Table Tab */}
+      {activeTab === 'table' && (
+        <div>
+          <h3 className="text-xl font-semibold mb-4">League Table</h3>
+          {/* TODO: Replace with real table endpoint */}
+          <table className="min-w-full border text-sm">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="border px-3 py-2">Pos</th>
+                <th className="border px-3 py-2">Team</th>
+                <th className="border px-3 py-2">P</th>
+                <th className="border px-3 py-2">W</th>
+                <th className="border px-3 py-2">D</th>
+                <th className="border px-3 py-2">L</th>
+                <th className="border px-3 py-2">Pts</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan={7} className="text-center py-4 text-gray-500">Loading standings...</td>
+                </tr>
+              ) : standings.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="text-center py-4 text-gray-500">No standings available</td>
+                </tr>
+              ) : (
+                standings.map((team) => (
+                  <tr key={team.id}>
+                    <td className="border px-3 py-2">{team.position}</td>
+                    <td className="border px-3 py-2">{team.team}</td>
+                    <td className="border px-3 py-2">{team.played}</td>
+                    <td className="border px-3 py-2">{team.wins}</td>
+                    <td className="border px-3 py-2">{team.draws}</td>
+                    <td className="border px-3 py-2">{team.losses}</td>
+                    <td className="border px-3 py-2 font-bold">{team.points}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
