@@ -49,12 +49,12 @@ export default function CreatePlayerPage() {
         }
 
         try {
-            await API.post('/players/', form, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            });
+            await API.post('/players/', form);
             router.push('/dashboard/player');
         } catch (err: any) {
-            setError(err.response?.data?.detail || 'Failed to create player');
+            console.error('Create player error:', err.response?.data || err);
+            // Show full server response instead of only detail
+            setError(JSON.stringify(err.response?.data || 'Failed to create player'));
         } finally {
             setLoading(false);
         }
@@ -62,25 +62,25 @@ export default function CreatePlayerPage() {
 
     return (
         <ProtectedRoute allowedGroups={['Players_manager']}>
-        <div className="max-w-xl mx-auto bg-white p-6 rounded shadow">
-            <h2 className="text-2xl font-semibold mb-4">Create New Player</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <input type="text" name="name" placeholder="Name" value={formData.name} onChange={handleChange} className="w-full border p-2 rounded" required />
-                <input type="number" name="jersey_number" placeholder="Jersey Number" value={formData.jersey_number} onChange={handleChange} className="w-full border p-2 rounded" required />
-                <select name="position" value={formData.position} onChange={handleChange} className="w-full border p-2 rounded" required>
-                    <option value="Goalkeeper">Goalkeeper</option>
-                    <option value="Defender">Defender</option>
-                    <option value="Midfielder">Midfielder</option>
-                    <option value="Forward">Forward</option>
-                </select>
-                <input type="number" name="age" placeholder="Age" value={formData.age} onChange={handleChange} className="w-full border p-2 rounded" required />
-                <input type="file" name="photo" onChange={handleChange} className="w-full" accept="image/*" />
-                {error && <p className="text-red-500 text-sm">{error}</p>}
-                <button type="submit" disabled={loading} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                    {loading ? 'Submitting...' : 'Create Player'}
-                </button>
-            </form>
-        </div>
+            <div className="max-w-xl mx-auto bg-white p-6 rounded shadow">
+                <h2 className="text-2xl font-semibold mb-4">Create New Player</h2>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <input type="text" name="name" placeholder="Name" value={formData.name} onChange={handleChange} className="w-full border p-2 rounded" required />
+                    <input type="number" name="jersey_number" placeholder="Jersey Number" value={formData.jersey_number} onChange={handleChange} className="w-full border p-2 rounded" required />
+                    <select name="position" value={formData.position} onChange={handleChange} className="w-full border p-2 rounded" required>
+                        <option value="Goalkeeper">Goalkeeper</option>
+                        <option value="Defender">Defender</option>
+                        <option value="Midfielder">Midfielder</option>
+                        <option value="Forward">Forward</option>
+                    </select>
+                    <input type="number" name="age" placeholder="Age" value={formData.age} onChange={handleChange} className="w-full border p-2 rounded" required />
+                    <input type="file" name="photo" onChange={handleChange} className="w-full" accept="image/*" />
+                    {error && <p className="text-red-500 text-sm">{error}</p>}
+                    <button type="submit" disabled={loading} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                        {loading ? 'Submitting...' : 'Create Player'}
+                    </button>
+                </form>
+            </div>
         </ProtectedRoute>
     );
 }
