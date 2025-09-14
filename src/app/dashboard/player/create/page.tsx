@@ -21,44 +21,48 @@ export default function CreatePlayerPage() {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-
+      
         if (name === 'photo') {
-            const fileInput = e.target as HTMLInputElement;
-            const file = fileInput.files?.[0];
-            if (file) {
-                setFormData({ ...formData, photo: file });
-            }
+          const file = (e.target as HTMLInputElement).files?.[0];
+          setFormData({ ...formData, photo: file || null });
         } else {
-            setFormData({ ...formData, [name]: value });
+          setFormData({ ...formData, [name]: value });
         }
-    };
+      };      
 
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
         setLoading(true);
-
+      
+        
+        if (!formData.photo) {
+          setError("Player photo is required.");
+          setLoading(false);
+          return;
+        }
+      
         const form = new FormData();
         form.append('name', formData.name);
         form.append('jersey_number', formData.jersey_number);
         form.append('position', formData.position);
         form.append('age', formData.age);
-        if (formData.photo) {
-            form.append('photo', formData.photo);
-        }
-
+        form.append('photo', formData.photo);
+      
         try {
-            await API.post('/players/', form);
-            router.push('/dashboard/player');
+          await API.post('/players/', form, {
+            headers: { "Content-Type": "multipart/form-data" }, // ✅ explicit
+          });
+          router.push('/dashboard/player');
         } catch (err: any) {
-            console.error('Create player error:', err.response?.data || err);
-            // Show full server response instead of only detail
-            setError(JSON.stringify(err.response?.data || 'Failed to create player'));
+          console.error('Create player error:', err.response?.data || err);
+          setError(JSON.stringify(err.response?.data || 'Failed to create player'));
         } finally {
-            setLoading(false);
+          setLoading(false);
         }
-    };
+      };
+      
 
     return (
         <ProtectedRoute allowedGroups={['Players_manager']}>
