@@ -25,6 +25,7 @@ export default function NextMatch() {
     const [timeLeft, setTimeLeft] = useState<string>("");
 
     const [bgImage, setBgImage] = useState("");
+    const [loading, setLoading] = useState(true)
 
     const images = [
         "https://images.unsplash.com/photo-1535903277987-0160cd22b41e?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8c3RhZGl1bXxlbnwwfHwwfHx8MA%3D%3D",
@@ -50,17 +51,21 @@ export default function NextMatch() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const fixtureRes = await API.get("/fixtures/next/");
+                const fixtureRes = await API.get("/public-next-fixtures/");
                 setNextFixture(fixtureRes.data);
             } catch {
                 setNextFixture(null);
+            } finally {
+                setLoading(false)
             }
 
             try {
-                const resultRes = await API.get("/results/latest/");
+                const resultRes = await API.get("/public-next-results");
                 setLatestResult(resultRes.data);
             } catch {
                 setLatestResult(null);
+            } finally {
+                setLoading(false)
             }
         };
 
@@ -94,6 +99,7 @@ export default function NextMatch() {
     const showResult =
         latestResult && latestResult.fixture.match_date === today;
 
+    if (loading) return <p className="text-center p-7">Loading ...</p>
     return (
         <section
             className="relative w-full h-[600px] flex items-center justify-center text-white"
