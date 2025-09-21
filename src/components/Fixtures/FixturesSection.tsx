@@ -32,7 +32,7 @@ const FixturesSection = () => {
         const allFixtures: APIFixture[] = res.data;
 
         // Filter for upcoming (not completed)
-        const upcomingFixtures = allFixtures.filter(f => f.status !== "completed").slice(0, 10);
+        const upcomingFixtures = allFixtures.filter(f => f.status !== "completed" && f.status !== "postponed").slice(0, 10);
         setFixtures(upcomingFixtures);
       } catch (err) {
         console.error("Failed to load fixtures", err);

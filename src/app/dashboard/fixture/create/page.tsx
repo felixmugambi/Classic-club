@@ -9,17 +9,24 @@ import ProtectedRoute from '../../../../components/protect/ProtectedRoute';
 export default function CreateFixture() {
   const router = useRouter();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    game_type: string;
+    opponent: string;
+    match_date: string;
+    match_time: string;
+    location: string;
+    is_home: boolean;
+    match_day?: string;  // 👈 optional
+  }>({
     game_type: 'league',
     opponent: '',
     match_date: '',
     match_time: '',
     location: '',
     is_home: true,
-    zone: 'A',
-    match_day: 1,
-    status: 'upcoming',
+    match_day: '',
   });
+
 
   const handleChange = (e: any) => {
     const { name, value, type, checked } = e.target;
@@ -29,17 +36,24 @@ export default function CreateFixture() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
-      await API.post('/fixtures/fixtures/', formData);
+      const payload = { ...formData };
+
+      if (payload.game_type !== 'league') {
+        delete payload.match_day;
+      }
+
+      await API.post('/fixtures/', payload);
       toast.success('Fixture created!');
       router.push('/dashboard/fixture');
     } catch (err: any) {
       const errorMsg =
-        err.response?.data?.non_field_errors?.[0] || // common error
-        Object.values(err.response?.data || {}).flat().join(', ') || // grab all messages
+        err.response?.data?.non_field_errors?.[0] ||
+        Object.values(err.response?.data || {}).flat().join(', ') ||
         'Failed to create fixture';
       toast.error(errorMsg);
     }
   };
+
 
   return (
     <ProtectedRoute allowedGroups={['Fixtures_Manager']}>
@@ -62,22 +76,18 @@ export default function CreateFixture() {
           <input name="location" value={formData.location} onChange={handleChange} placeholder="Location" className="w-full border p-2 rounded" />
 
           {/* Conditionally render if league is selected */}
-          { formData.game_type === 'league' && (
+          {formData.game_type === 'league' && (
             <>
-          <input name="match_day" type="number" value={formData.match_day} onChange={handleChange} placeholder="Match Day" className="w-full border p-2 rounded" />
-
-          <select name="zone" value={formData.zone} onChange={handleChange} className="w-full border p-2 rounded">
-            <option value="A">Zone A</option>
-            <option value="B">Zone B</option>
-            <option value="C">Zone C</option>
-          </select>
-
-          <select name="status" value={formData.status} onChange={handleChange} className="w-full border p-2 rounded">
-            <option value="upcoming">Upcoming</option>
-            <option value="completed">Completed</option>
-            <option value="postponed">Postponed</option>
-          </select>
-          </>
+              <input
+                name="match_day"
+                type="number"
+                value={formData.match_day || ''}
+                onChange={handleChange}
+                placeholder="Enter Match Day"
+                className="w-full border p-2 rounded"
+                required
+              />
+            </>
           )}
 
           <label className="flex items-center gap-2">

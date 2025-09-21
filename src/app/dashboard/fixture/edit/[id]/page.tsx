@@ -6,21 +6,35 @@ import toast from 'react-hot-toast';
 import API from '../../../../../api/axios';
 import ProtectedRoute from '../../../../../components/protect/ProtectedRoute';
 
+
+type FixtureFormData = {
+  game_type: string;
+  opponent: string;
+  match_date: string;
+  match_time: string;
+  location: string;
+  is_home: boolean;
+  status: string;
+  zone?: string;       // optional
+  match_day?: number;  // optional
+};
+
+
 export default function EditFixturePage() {
   const { id } = useParams();
   const router = useRouter();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FixtureFormData>({
     game_type: 'League Game',
     opponent: '',
     match_date: '',
     match_time: '',
     location: '',
     is_home: true,
-    zone: 'A',
-    match_day: 1,
     status: 'upcoming',
+    match_day: 1,
   });
+
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -37,7 +51,6 @@ export default function EditFixturePage() {
           match_time: data.match_time,
           location: data.location,
           is_home: data.is_home,
-          zone: data.zone,
           match_day: data.match_day,
           status: data.status,
         });
@@ -61,18 +74,24 @@ export default function EditFixturePage() {
     setError('');
 
     try {
-      await API.put(`/fixtures/${id}/`, formData);
-      console.log(formData)
+      const payload = { ...formData };
+
+      if (payload.game_type !== 'league') {
+        delete payload.match_day;
+      }
+
+      await API.put(`/fixtures/${id}/`, payload);
       toast.success('Fixture updated successfully');
       router.push('/dashboard/fixture');
     } catch (err: any) {
       const errorMsg =
-        err.response?.data?.non_field_errors?.[0] || // common error
-        Object.values(err.response?.data || {}).flat().join(', ') || // grab all messages
-        'Failed to create fixture';
-      toast.error(errorMsg);  
+        err.response?.data?.non_field_errors?.[0] ||
+        Object.values(err.response?.data || {}).flat().join(', ') ||
+        'Failed to update fixture';
+      toast.error(errorMsg);
     }
   };
+
 
   if (loading) return <p className="text-center py-10">Loading fixture...</p>;
 
@@ -137,16 +156,6 @@ export default function EditFixturePage() {
                   className="w-full border p-2 rounded"
                   placeholder="Match Day"
                 />
-                <select
-                  name="zone"
-                  value={formData.zone}
-                  onChange={handleChange}
-                  className="w-full border p-2 rounded"
-                >
-                  <option value="A">Zone A</option>
-                  <option value="B">Zone B</option>
-                  <option value="C">Zone C</option>
-                </select>
               </>
             )
           }
