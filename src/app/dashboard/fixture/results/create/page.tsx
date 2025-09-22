@@ -67,23 +67,25 @@ export default function CreateResultPage() {
 
     try {
       await API.post('/results/', {
-        fixture: formData.fixture,
+        fixture_id: parseInt(formData.fixture), 
         home_score: parsedHome,
         away_score: parsedAway,
         notes: formData.notes,
-        classic_scorers: homeScorers,
+        home_scorers: homeScorers, 
         away_scorers: awayScorers,
       });
 
       toast.success("Result saved!");
       router.push("/dashboard/fixture");
     } catch (err: any) {
+      console.error("Result error:", err.response?.data);
       const errorMsg =
         err.response?.data?.non_field_errors?.[0] ||
         Object.values(err.response?.data || {}).flat().join(', ') ||
         'Failed to save result';
       toast.error(errorMsg);
     }
+
   };
 
   return (
@@ -224,10 +226,12 @@ export default function CreateResultPage() {
 
             <button
               type="submit"
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
+              disabled={loading}
+              className={`px-4 py-2 rounded w-full ${loading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
             >
-              Submit Result
+              {loading ? 'Saving...' : 'Submit Result'}
             </button>
+
           </form>
         )}
       </div>

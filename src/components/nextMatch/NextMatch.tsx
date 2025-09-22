@@ -38,14 +38,14 @@ export default function NextMatch() {
     useEffect(() => {
         let index = 0;
         setBgImage(images[index]); // set first image
-      
+
         const interval = setInterval(() => {
-          index = (index + 1) % images.length;
-          setBgImage(images[index]);
+            index = (index + 1) % images.length;
+            setBgImage(images[index]);
         }, 8000); // change every 8 seconds
-      
+
         return () => clearInterval(interval);
-      }, []);
+    }, []);
 
     // Fetch next fixture & latest result
     useEffect(() => {
@@ -60,7 +60,7 @@ export default function NextMatch() {
             }
 
             try {
-                const resultRes = await API.get("/public-next-results");
+                const resultRes = await API.get("/public-next-results/");
                 setLatestResult(resultRes.data);
             } catch {
                 setLatestResult(null);
@@ -96,8 +96,15 @@ export default function NextMatch() {
     }, [nextFixture]);
 
     const today = new Date().toISOString().split("T")[0];
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split("T")[0];
+
     const showResult =
-        latestResult && latestResult.fixture.match_date === today;
+        latestResult &&
+        (latestResult.fixture.match_date === today ||
+            latestResult.fixture.match_date === yesterdayStr);
+
 
     if (loading) return <p className="text-center p-7">Loading ...</p>
     return (
