@@ -12,7 +12,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { user, loading } = useAuth();
 
   const [authorized, setAuthorized] = useState<boolean | null>(null); 
-  // null = not decided yet, true = allowed, false = denied
+ 
 
   const subDashboardPaths = ['/dashboard/player', '/dashboard/blog', '/dashboard/fixture'];
   const isSubDashboard = subDashboardPaths.some((path) => pathname.startsWith(path));
@@ -41,7 +41,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   // Loading screen (while auth state is being checked)
   if (loading || authorized === null) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-red-400">
+      <div className="flex items-center justify-center min-h-screen bg-red-500">
         <p className="text-lg font-semibold">Checking permissions...</p>
       </div>
     );

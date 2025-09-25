@@ -157,7 +157,7 @@ const LoginPage = () => {
         </div>
 
         {/* Social Sign In */}
-        <div className="flex justify-between gap-2">
+        {/*<div className="flex justify-between gap-2">
           <button className="flex-1 border px-4 py-2 rounded text-sm flex items-center justify-center gap-2 hover:bg-gray-50">
             <FaGoogle /> Google
           </button>
@@ -167,7 +167,7 @@ const LoginPage = () => {
           <button className="flex-1 border px-4 py-2 rounded text-sm flex items-center justify-center gap-2 hover:bg-gray-50">
             <FaApple /> Apple
           </button>
-        </div>
+        </div>*/}
       </div>
     </div>
   );

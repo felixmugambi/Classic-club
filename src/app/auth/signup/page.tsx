@@ -131,6 +131,7 @@ const SignupPage = () => {
         </div>
 
         {/* Social Sign Up */}
+        {/** 
         <div className="flex justify-between gap-2">
           <button className="flex-1 border px-4 py-2 rounded text-sm flex items-center justify-center gap-2 hover:bg-gray-50">
             <FaGoogle /> Google
@@ -142,6 +143,7 @@ const SignupPage = () => {
             <FaApple /> Apple
           </button>
         </div>
+        */}
 
         {/* Login link */}
         <p className="text-sm text-center text-gray-600">

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FiUsers, FiEdit, FiCalendar, FiMenu, FiX } from 'react-icons/fi';
+import Logo from '../ui/Logo';
 
 const groups = [
   { name: 'Player Manager', href: '/dashboard/player', icon: <FiUsers /> },
@@ -16,14 +17,17 @@ export default function GroupSidebar() {
   const [open, setOpen] = useState(false);
 
   return (
+    <>
     <div className="flex">
       {/* Toggle Button (mobile only) */}
       <button
         onClick={() => setOpen(!open)}
-        className="md:hidden fixed top-4 left-4 z-50 p-2 text-gray-900 dark:text-white bg-white rounded shadow"
+        className="md:hidden fixed top-10 left-4 z-50 p-2 text-gray-800 font-bold dark:text-slate-600 bg-white rounded shadow ml-3"
       >
         {open ? <FiX size={24} /> : <FiMenu size={24} />}
       </button>
+    
+      
 
       {/* Sidebar */}
       <aside
@@ -33,7 +37,7 @@ export default function GroupSidebar() {
   md:translate-x-0 md:relative md:flex md:flex-col md:w-64 md:h-[90vh] md:m-4 md:rounded-lg`}
       >
 
-        <h2 className="text-2xl font-bold mb-6 mt-10">Dashboard</h2>
+        <h2 className="text-2xl font-bold mb-6 mt-16">Dashboard</h2>
         <nav className="flex flex-col gap-3">
           {groups.map((group) => (
             <Link
@@ -59,5 +63,6 @@ export default function GroupSidebar() {
         />
       )}
     </div>
+    </>
   );
 }
