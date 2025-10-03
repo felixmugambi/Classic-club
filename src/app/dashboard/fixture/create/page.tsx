@@ -6,8 +6,10 @@ import API from '../../../../api/axios';
 import toast from 'react-hot-toast';
 import ProtectedRoute from '../../../../components/protect/ProtectedRoute';
 
+
 export default function CreateFixture() {
   const router = useRouter();
+  const [loading, setLoading] = useState(false)
 
   const [formData, setFormData] = useState<{
     game_type: string;
@@ -35,6 +37,7 @@ export default function CreateFixture() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const payload = { ...formData };
 
@@ -46,11 +49,14 @@ export default function CreateFixture() {
       toast.success('Fixture created!');
       router.push('/dashboard/fixture');
     } catch (err: any) {
+      console.log("Fixture create error:", err.response?.data);
       const errorMsg =
         err.response?.data?.non_field_errors?.[0] ||
         Object.values(err.response?.data || {}).flat().join(', ') ||
         'Failed to create fixture';
       toast.error(errorMsg);
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -95,7 +101,13 @@ export default function CreateFixture() {
             Is Home Game
           </label>
 
-          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Create Fixture</button>
+          <button
+            disabled={loading}
+            type="submit"
+            className="bg-green-500 hover:bg-green-400 text-white px-4 py-2 rounded"
+          >
+            {loading ? 'Creating ...' : "Create Fixture"}
+          </button>
         </form>
       </div>
     </ProtectedRoute>

@@ -6,7 +6,6 @@ import toast from 'react-hot-toast';
 import API from '../../../../../api/axios';
 import ProtectedRoute from '../../../../../components/protect/ProtectedRoute';
 
-
 type FixtureFormData = {
   game_type: string;
   opponent: string;
@@ -23,6 +22,8 @@ type FixtureFormData = {
 export default function EditFixturePage() {
   const { id } = useParams();
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const [formData, setFormData] = useState<FixtureFormData>({
     game_type: 'League Game',
@@ -34,10 +35,6 @@ export default function EditFixturePage() {
     status: 'upcoming',
     match_day: 1,
   });
-
-
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchFixture = async () => {
@@ -56,8 +53,6 @@ export default function EditFixturePage() {
         });
       } catch (err) {
         setError('Failed to fetch fixture.');
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -72,6 +67,7 @@ export default function EditFixturePage() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setError('');
+    setLoading(true)
 
     try {
       const payload = { ...formData };
@@ -89,6 +85,8 @@ export default function EditFixturePage() {
         Object.values(err.response?.data || {}).flat().join(', ') ||
         'Failed to update fixture';
       toast.error(errorMsg);
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -180,10 +178,11 @@ export default function EditFixturePage() {
           </label>
           {error && <p className="text-red-500 text-sm">{error}</p>}
           <button
+            disabled={loading}
             type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-400"
           >
-            Update Fixture
+            {loading ? "Updating ..." : "Update Fixture"}
           </button>
         </form>
       </div>

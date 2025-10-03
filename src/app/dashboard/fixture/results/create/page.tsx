@@ -227,7 +227,7 @@ export default function CreateResultPage() {
             <button
               type="submit"
               disabled={loading}
-              className={`px-4 py-2 rounded w-full ${loading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+              className={`px-4 py-2 rounded w-full ${loading ? 'bg-gray-400' : 'bg-green-500 hover:bg-green-400 text-white'}`}
             >
               {loading ? 'Saving...' : 'Submit Result'}
             </button>

@@ -25,15 +25,14 @@ export default function ConfirmModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg max-w-md w-full p-6">
-        <h2 className="text-lg font-semibold">{title}</h2>
-        <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
+      <div className="t bg-white dark:bg-gray-900 rounded-2xl shadow-lg max-w-md w-full p-6">
+        <h2 className="text-lg font-semibold text-gray-600">{title}</h2>
+        <h3 className="text-sm text-gray-600 dark:text-gray-300 mt-2">
           {description}
-        </p>
-
+        </h3>
         <div className="flex justify-end gap-3 mt-6">
           <button
-            className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
+            className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-500 hover:bg-gray-300 dark:hover:bg-gray-600"
             onClick={onClose}
           >
             {cancelText}

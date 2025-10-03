@@ -44,8 +44,8 @@ export default function ResultsPage() {
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="text-xl font-bold">Match Results</h2>
                     <Link
-                        href="/dashboard/results/create"
-                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                        href="/dashboard/fixture/results/create/"
+                        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-500"
                     >
                         + Add Result
                     </Link>
@@ -84,7 +84,7 @@ export default function ResultsPage() {
                                             <td className="border px-3 py-2 text-gray-500">{r.notes || '-'}</td>
                                             <td className="border px-3 py-2 text-center">
                                                 <button
-                                                    className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700"
+                                                    className="bg-green-500 text-white px-3 py-1 rounded text-xs hover:bg-green-500"
                                                 >
                                                     <Link href={`/dashboard/fixture/results/edit/${r.id}`}>
                 Edit

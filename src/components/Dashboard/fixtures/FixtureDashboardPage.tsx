@@ -9,7 +9,7 @@ import ConfirmModal from '../../confirm/ConfirmModal';
 
 export default function FixtureDashboardPage() {
   const [fixtures, setFixtures] = useState([]);
-  const { user, loading } = useAuth()
+  const { user } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
@@ -19,11 +19,6 @@ export default function FixtureDashboardPage() {
       .catch(() => setFixtures([]));
   }, []);
 
-  useEffect(() => {
-    if (user) {
-      console.log(user)
-    }
-  }, [])
 
   const groupedFixtures = {
     upcoming: fixtures.filter((f: any) => f.status === "upcoming"),
@@ -48,7 +43,7 @@ export default function FixtureDashboardPage() {
         <h2 className="text-2xl font-semibold mb-4">All Fixtures</h2>
         <Link
           href="/dashboard/fixture/create"
-          className="bg-blue-600 text-white px-3 py-1 rounded mb-6 inline-block"
+          className="bg-green-500 hover:bg-green-400 text-white px-3 py-1 rounded mb-6 inline-block"
         >
           Create New Fixture
         </Link>
@@ -82,7 +77,7 @@ export default function FixtureDashboardPage() {
                     {(fix.status !== "completed" || user?.groups.includes('Higher_admins')) && (
                       <Link
                         href={`/dashboard/fixture/edit/${fix.id}`}
-                        className="text-blue-600 hover:underline m-2"
+                        className="text-green-500  hover:underline m-2"
                       >
                         Edit
                       </Link>

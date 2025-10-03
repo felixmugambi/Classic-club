@@ -1,3 +1,36 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Remove number input spinners in Quill toolbar */
+.ql-toolbar input[type="number"] {
+    -moz-appearance: textfield; /* Firefox */
+    appearance: none; /* Chrome, Edge, Safari */
+    border: none;
+    background: transparent;
+    width: 40px; /* keep it small */
+    text-align: center;
+  }
+  
+  /* Remove Chrome/Safari up/down arrows */
+  .ql-toolbar input[type="number"]::-webkit-inner-spin-button,
+  .ql-toolbar input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  
+  /* Style dropdown selects (headers, font, size, etc.) */
+  .ql-toolbar select {
+    border: none;
+    background: transparent;
+    padding: 2px 6px;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+  }
+  
+  .ql-toolbar select:focus {
+    outline: none;
+    box-shadow: none;
+  }
+  

@@ -5,6 +5,15 @@ import { useRouter } from 'next/navigation';
 import API from '../../../../api/axios';
 import toast from 'react-hot-toast';
 import ProtectedRoute from '../../../../components/protect/ProtectedRoute';
+import dynamic from 'next/dynamic';
+import "react-quill-new/dist/quill.snow.css";
+
+
+const ReactQuill = dynamic(
+  () => import('react-quill-new'),   // <= new package
+  { ssr: false }
+);
+
 
 export default function CreateBlogPage() {
   const router = useRouter();
@@ -18,8 +27,8 @@ export default function CreateBlogPage() {
 
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name } = e.target;
 
     if (name === 'image') {
       const fileInput = e.target as HTMLInputElement;
@@ -28,7 +37,7 @@ export default function CreateBlogPage() {
         setFormData({ ...formData, image: file });
       }
     } else {
-      setFormData({ ...formData, [name]: value });
+      setFormData({ ...formData, [name]: e.target.value });
     }
   };
 
@@ -39,7 +48,7 @@ export default function CreateBlogPage() {
     const blogData = new FormData();
     blogData.append('title', formData.title);
     blogData.append('subtitle', formData.subtitle);
-    blogData.append('content', formData.content);
+    blogData.append('content', formData.content); // HTML from Quill
     if (formData.image) {
       blogData.append('image', formData.image);
     }
@@ -80,15 +89,26 @@ export default function CreateBlogPage() {
             className="w-full border p-2 rounded"
             required
           />
-          <textarea
-            name="content"
+
+          {/* Rich Text Editor */}
+          <ReactQuill
             value={formData.content}
-            onChange={handleChange}
-            placeholder="Content"
-            rows={6}
-            className="w-full border p-2 rounded"
-            required
+            onChange={(val) => setFormData({ ...formData, content: val })}
+            theme="snow"
+            placeholder="Write your blog content here..."
+            className="bg-white rounded"
+            modules={{
+              toolbar: [
+                // remove [{ header: [1, 2, 3, false] }] if you don’t want the dropdown
+                ["bold", "italic", "underline", "blockquote"],
+                [{ list: "ordered" }, { list: "bullet" }],
+                ["clean"],
+              ],
+            }}
+            
           />
+
+
           <input
             type="file"
             name="image"
@@ -99,7 +119,7 @@ export default function CreateBlogPage() {
           <button
             type="submit"
             disabled={loading}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-400"
           >
             {loading ? 'Creating...' : 'Create Blog'}
           </button>

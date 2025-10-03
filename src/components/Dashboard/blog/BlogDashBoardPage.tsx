@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import API from '../../../api/axios';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import ConfirmModal from '../../confirm/ConfirmModal';
 
 type Blog = {
   id: number;
@@ -20,6 +21,10 @@ export default function BlogDashboardPage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+
+  const [deleteBlog, setDeleteBlog] = useState<Blog | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -54,10 +59,10 @@ export default function BlogDashboardPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Blog Manager</h2>
+        <h2 className="text-2xl font-bold">Blogs</h2>
         <button
           onClick={() => router.push('/dashboard/blog/create')}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-400"
         >
           Create Blog
         </button>
@@ -68,7 +73,7 @@ export default function BlogDashboardPage() {
           <tr className="bg-gray-100 text-left text-sm font-semibold text-gray-700">
             <th className="px-4 py-2">#</th>
             <th className="px-4 py-2">Title</th>
-            <th className="px-4 py-2">Created</th>
+            <th className="px-4 py-2 hidden md:block">Created</th>
             <th className="px-4 py-2">Actions</th>
           </tr>
         </thead>
@@ -77,7 +82,7 @@ export default function BlogDashboardPage() {
             <tr key={blog.id} className="border-t text-sm">
               <td className="px-4 py-2">{blog.id}</td>
               <td className="px-4 py-2">{blog.title}</td>
-              <td className="px-4 py-2">{new Date(blog.created_at).toLocaleDateString()}</td>
+              <td className="px-4 py-2 hidden md:block">{new Date(blog.created_at).toLocaleDateString()}</td>
               <td className="px-4 py-2 space-x-2">
                 <button
                   onClick={() => router.push(`/dashboard/blog/edit/${blog.id}/`)}
@@ -86,11 +91,38 @@ export default function BlogDashboardPage() {
                   Edit
                 </button>
                 <button
-                  onClick={() => handleDelete(blog.id, blog.title)}
+                  onClick={() => {
+                    setDeleteBlog(blog);
+                    setConfirmOpen(true);
+                  }}
                   className="text-red-600 hover:underline"
                 >
                   Delete
                 </button>
+
+                <ConfirmModal
+                  open={confirmOpen}
+                  onClose={() => setConfirmOpen(false)}
+                  onConfirm={async () => {
+                    if (!deleteBlog) return;
+
+                    try {
+                      await API.delete(`/news/delete/${deleteBlog.id}/`);
+                      setBlogs(blogs.filter((b) => b.id !== deleteBlog.id));
+                      toast.success("Blog deleted");
+                    } catch (err) {
+                      toast.error("Failed to delete blog");
+                    } finally {
+                      setConfirmOpen(false);
+                      setDeleteBlog(null);
+                    }
+                  }}
+                  title="Delete Blog"
+                  description={`Are you sure you want to delete "${deleteBlog?.title}"? This action cannot be undone.`}
+                  confirmText="Delete"
+                />
+
+
               </td>
             </tr>
           ))}

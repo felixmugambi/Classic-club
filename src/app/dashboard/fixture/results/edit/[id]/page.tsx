@@ -256,10 +256,11 @@ export default function EditResultPage() {
             />
 
             <button
+            disabled={loading}
               type="submit"
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
+              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-400 w-full"
             >
-              Save Changes
+              {loading ? "Updating ..." : "Update Result"}
             </button>
           </form>
         )}
