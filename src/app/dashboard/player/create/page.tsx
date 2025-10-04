@@ -80,7 +80,7 @@ export default function CreatePlayerPage() {
                     <input type="number" name="age" placeholder="Age" value={formData.age} onChange={handleChange} className="w-full border p-2 rounded" required />
                     <input type="file" name="photo" onChange={handleChange} className="w-full" accept="image/*" />
                     {error && <p className="text-red-500 text-sm">{error}</p>}
-                    <button type="submit" disabled={loading} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                    <button type="submit" disabled={loading} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-400">
                         {loading ? 'Submitting...' : 'Create Player'}
                     </button>
                 </form>

@@ -5,6 +5,7 @@ import API from '../../../api/axios';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../../confirm/ConfirmModal';
+import Loader from '../../common/Loader';
 
 type Blog = {
   id: number;
@@ -41,20 +42,7 @@ export default function BlogDashboardPage() {
     fetchBlogs();
   }, []);
 
-  const handleDelete = async (id: number, title: string) => {
-    const confirmDelete = confirm(`Are you sure you want to delete "${title}"?`);
-    if (!confirmDelete) return;
-
-    try {
-      await API.delete(`/news/delete/${id}/`);
-      setBlogs(blogs.filter((b) => b.id !== id));
-      toast.success('Blog deleted');
-    } catch (err) {
-      toast.error('Failed to delete blog');
-    }
-  };
-
-  if (loading) return <p>Loading blogs...</p>;
+  if (loading) return <Loader />
 
   return (
     <div>

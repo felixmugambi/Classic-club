@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import GroupSidebar from '../../components/Dashboard/GroupSidebar';
 import { useAuth } from '../../components/context/AuthContext';
 import toast from 'react-hot-toast';
+import Loader from '../../components/common/Loader';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -41,8 +42,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   // Loading screen (while auth state is being checked)
   if (loading || authorized === null) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-red-500">
-        <p className="text-lg font-semibold">Checking permissions...</p>
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader />
       </div>
     );
   }

@@ -6,6 +6,7 @@ import publicAPI from '../../../api/publicAxios';
 import { slugify } from '../../../components/helper/slugify';
 import { FaFacebook, FaTwitter, FaUserCircle, FaWhatsapp } from 'react-icons/fa';
 import toast from 'react-hot-toast';
+import Loader from '../../../components/common/Loader';
 
 export default function NewsDetailPage() {
   const { id, slug } = useParams();
@@ -72,7 +73,7 @@ export default function NewsDetailPage() {
     }
   }, [slug]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <Loader />;
 
   if (!blog) return <p className="text-center text-red-500 mt-10">Blog not found</p>;
 

@@ -5,6 +5,7 @@ import { FaChevronRight, FaChevronLeft } from "react-icons/fa";
 import FixtureCard from "./FixtureCard";
 import API from "../../api/axios";
 import { useRouter } from 'next/navigation';
+import Loader from "../common/Loader";
 
 type APIFixture = {
   id: number;
@@ -69,7 +70,7 @@ const FixturesSection = () => {
       </div>
 
       {loading ? (
-        <p className="text-center py-10 text-gray-500">Loading fixtures...</p>
+        <Loader />
       ) : fixtures.length === 0 ? (
         <p className="text-center py-10 text-gray-500">No upcoming fixtures.</p>
       ) : (

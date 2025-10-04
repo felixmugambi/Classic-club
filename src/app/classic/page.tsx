@@ -10,6 +10,7 @@ import { useAuth } from '../../components/context/AuthContext';
 import API from '../../api/axios';
 import Image from 'next/image';
 import ConfirmModal from '../../components/confirm/ConfirmModal';
+import Loader from '../../components/common/Loader';
 
 type FanProfile = {
   id: number;
@@ -43,6 +44,7 @@ export default function MyClassicPage() {
   const [fanMessage, setFanMessage] = useState('');
 
   const [isOpen, setIsOpen] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
 
 
 
@@ -116,9 +118,7 @@ export default function MyClassicPage() {
 
   if (loading || loadingProfile) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-gray-600">
-        Loading...
-      </div>
+      <Loader />
     );
   }
 
@@ -140,12 +140,15 @@ export default function MyClassicPage() {
             ) : (
               <div className="relative">
                 <FaUserCircle className="text-6xl text-gray-500" />
+                {/* 
                 <button
                   className="absolute -bottom-1 -right-1 bg-clubRed text-white p-1 rounded-full shadow hover:bg-red-700"
                   title="Add Profile Picture"
                 >
                   <FaPlus size={12} />
                 </button>
+                */}
+                
               </div>
             )}
             <div>
@@ -160,9 +163,22 @@ export default function MyClassicPage() {
           </div>
 
           <div className="mt-4 md:mt-0 flex items-center gap-4">
-            <button className="bg-clubRed text-white px-4 py-2 rounded shadow hover:bg-red-800 transition">
+            <button 
+            onClick={() => setConfirmOpen(true)}
+            className="bg-clubRed text-white px-4 py-2 rounded shadow hover:bg-red-800 transition">
               Become a Member
             </button>
+
+            <ConfirmModal
+                open={confirmOpen}
+                onClose={() => setConfirmOpen(false)}
+                onConfirm={ () => setConfirmOpen(false)}
+                title="Confirm?"
+                description="Feature Comming soon!!!."
+                confirmText="Ok"
+                cancelText="Cancel"
+              />
+
             <button
               className="text-red-600 hover:text-red-800 flex items-center gap-1"
               onClick={() => setIsOpen(true)}

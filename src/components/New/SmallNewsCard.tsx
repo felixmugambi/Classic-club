@@ -31,7 +31,6 @@ const SmallNewsCard = ({ data }: { data: any }) => {
         {/* Bottom row */}
         <div className="flex justify-between items-center mt-3 text-xs text-gray-500">
           <span>{getRelativeTime(data.created_at)}</span>
-          <FaShareAlt className="cursor-pointer hover:text-clubRed" />
         </div>
       </div>
     </div>

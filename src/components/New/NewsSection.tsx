@@ -6,6 +6,7 @@ import LargeNewsCard from "./LargeNewsCard";
 import SmallNewsCard from "./SmallNewsCard";
 import { FaChevronRight } from "react-icons/fa";
 import Link from "next/link";
+import Loader from "../common/Loader";
 
 type Blog = {
   id: number;
@@ -37,7 +38,7 @@ const NewsSection = () => {
     fetchBlogs();
   }, []);
 
-  if (loading) return <p className="text-center py-10">Loading news...</p>;
+  if (loading) return <Loader />
 
   return (
     <section className="max-w-7xl mx-auto px-4 py-12">
@@ -60,7 +61,7 @@ const NewsSection = () => {
         </div>
 
         {/* Small News */}
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 items-stretch">
           {blogs.slice(2, 5).map((item) => (
             <SmallNewsCard key={item.id} data={item} />
           ))}

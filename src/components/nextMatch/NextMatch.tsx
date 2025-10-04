@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import API from "../../api/axios";
+import Loader from "../common/Loader";
 
 type Fixture = {
     id: number;
@@ -106,7 +107,7 @@ export default function NextMatch() {
             latestResult.fixture.match_date === yesterdayStr);
 
 
-    if (loading) return <p className="text-center p-7">Loading ...</p>
+    if (loading) return <Loader />
     return (
         <section
             className="relative w-full h-[600px] flex items-center justify-center text-white"

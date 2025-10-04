@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import publicAPI from "../../api/publicAxios";
 import LargeNewsCard from "../../components/New/LargeNewsCard";
 import SmallNewsCard from "../../components/New/SmallNewsCard";
+import Loader from "../../components/common/Loader";
 
 const ITEMS_PER_LOAD = 10;
 
@@ -21,6 +22,7 @@ type Blog = {
 const NewsPage = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_LOAD);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -30,6 +32,8 @@ const NewsPage = () => {
         setBlogs(sorted);
       } catch (err) {
         console.error("Failed to fetch blogs", err);
+      } finally {
+        setLoading(false)
       }
     };
 
@@ -88,7 +92,7 @@ const NewsPage = () => {
     return blocks;
   };
   
-  
+if (loading) return <Loader />
 
   return (
     <section className="max-w-7xl mx-auto px-4 py-12">
@@ -96,7 +100,7 @@ const NewsPage = () => {
       {renderBlocks()}
 
       {visibleCount < blogs.length && (
-        <div className="flex justify-center mt-10">
+        <div className="flex justify-center mt-10 bg-slate-400">
           <button
             onClick={handleLoadMore}
             className="bg-clubRed hover:bg-red-700 text-white px-6 py-2 rounded shadow transition"

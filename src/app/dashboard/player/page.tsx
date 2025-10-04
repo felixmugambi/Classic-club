@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import API from '../../../api/axios';
 import { useAuth } from '../../../components/context/AuthContext';
+import Loader from '../../../components/common/Loader';
 
 type Player = {
   id: number;
@@ -41,7 +42,7 @@ export default function PlayerDashboardHome() {
     fetchPlayers();
   }, []);
 
-  if (loading) return <p>Loading players...</p>;
+  if (loading) return <Loader />
 
   return (
     <>

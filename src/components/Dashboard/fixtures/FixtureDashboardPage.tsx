@@ -6,17 +6,20 @@ import API from '../../../api/axios';
 import ProtectedRoute from '../../../components/protect/ProtectedRoute';
 import { useAuth } from '../../context/AuthContext';
 import ConfirmModal from '../../confirm/ConfirmModal';
+import Loader from '../../common/Loader';
 
 export default function FixtureDashboardPage() {
   const [fixtures, setFixtures] = useState([]);
   const { user } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     API.get('/fixtures/')
       .then((res) => setFixtures(res.data))
-      .catch(() => setFixtures([]));
+      .catch(() => setFixtures([]))
+      .finally(() => setLoading(false));
   }, []);
 
 
@@ -33,9 +36,11 @@ export default function FixtureDashboardPage() {
     } catch (err) {
       console.error(err);
       alert("Failed to delete fixture.");
+    } finally {
+      setLoading(false)
     }
   };
-
+if (loading) return <Loader />
 
   return (
     <ProtectedRoute allowedGroups={['Fixtures_Manager']}>

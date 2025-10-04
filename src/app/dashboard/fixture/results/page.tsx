@@ -5,6 +5,7 @@ import API from '../../../../api/axios';
 import ProtectedRoute from '../../../../components/protect/ProtectedRoute';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
+import Loader from '../../../../components/common/Loader';
 
 type Result = {
     id: number;
@@ -52,7 +53,7 @@ export default function ResultsPage() {
                 </div>
 
                 {loading ? (
-                    <p className="text-gray-500">Loading results...</p>
+                    <Loader />
                 ) : results.length === 0 ? (
                     <p className="text-gray-500">No results have been recorded yet.</p>
                 ) : (
