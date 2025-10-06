@@ -2,8 +2,8 @@
 "use client";
 
 import { FaUser } from "react-icons/fa";
-import Button from "../ui/Button";
 import { useAuth } from "../context/AuthContext";
+import Link from "next/link";
 
 const TopBar = () => {
   const { isAuthenticated, user } = useAuth();
@@ -14,7 +14,9 @@ const TopBar = () => {
         {isAuthenticated ? (
           <div className="flex items-center gap-2">
             <FaUser className="text-lg" />
+            <Link  href="/classic">
             <span>Hi, {user?.name || 'Guest'}</span>
+            </Link>
           </div>
         ) : (
           <div className="relative group">
@@ -22,14 +24,17 @@ const TopBar = () => {
               <FaUser className="text-lg" />
               <span>Sign In</span>
             </div>
-            <div className="absolute top-8 left-0 bg-white text-black shadow-lg rounded w-40 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+            {/**
+             <div className="absolute top-8 left-0 bg-white text-black shadow-lg rounded w-40 opacity-100 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
               <Button variant="ghost" fullWidth>
                 <a href="/auth/login">Login</a>
               </Button>
               <Button variant="ghost" fullWidth>
                 <a href="/auth/signup">Sign Up</a>
               </Button>
-            </div>
+            </div>  
+             */}
+            
           </div>
         )}
       </div>

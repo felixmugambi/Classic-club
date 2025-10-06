@@ -59,9 +59,6 @@ const FixturesSection = () => {
       <div className="flex justify-between items-center mb-6 flex-wrap gap-2">
         <h2 className="text-xl font-bold text-black">Upcoming Fixtures</h2>
         <div className="flex items-center gap-4">
-          <button className="bg-white text-clubRed border border-clubRed px-4 py-2 rounded-md text-sm hover:bg-red-50 transition">
-            Add Fixtures to Calendar
-          </button>
           <div className="flex items-center gap-1 cursor-pointer text-sm font-medium text-clubRed hover:underline">
             <span onClick={() => router.push('/matches')}>All Fixtures</span>
             <FaChevronRight className="text-xs" />

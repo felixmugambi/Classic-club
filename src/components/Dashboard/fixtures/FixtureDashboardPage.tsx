@@ -68,7 +68,7 @@ if (loading) return <Loader />
                       {fix.opponent} - {fix.game_type}
                     </h3>
                     <p>
-                      {fix.match_date} - {fix.match_time}
+                      {new Date(fix.match_date).toLocaleDateString('en-US', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})} - {fix.match_time}
                     </p>
                     <p>
                       {fix.game_type === "friendly"

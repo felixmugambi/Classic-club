@@ -104,10 +104,11 @@ export default function EditFixturePage() {
             onChange={handleChange}
             className="w-full border p-2 rounded"
           >
-            <option value="league">League Game</option>
-            <option value="friendly">Friendly</option>
-            <option value="cup">Cup Match</option>
+            <option value="League Game">League Game</option>
+            <option value="Friendly">Friendly</option>
+            <option value="Cup Match">Cup Match</option>
           </select>
+
           <input
             type="text"
             name="opponent"
@@ -144,7 +145,7 @@ export default function EditFixturePage() {
 
           { /** conditionally render if league is selected */}
           {
-            formData.game_type === 'league' && (
+            formData.game_type === 'League Game' && (
               <>
                 <input
                   type="number"

@@ -24,9 +24,8 @@ export default function CreateResultPage() {
   useEffect(() => {
     const fetchCompletedFixtures = async () => {
       try {
-        const res = await API.get('/fixtures/?status=completed');
-        const unscored = res.data.filter((f: any) => !f.result);
-        setFixtures(unscored);
+        const res = await API.get('/fixtures/?status=completed&pending_only=true');
+        setFixtures(res.data);
       } catch {
         toast.error('Failed to fetch fixtures');
       } finally {
@@ -67,16 +66,16 @@ export default function CreateResultPage() {
 
     try {
       await API.post('/results/', {
-        fixture_id: parseInt(formData.fixture), 
+        fixture_id: parseInt(formData.fixture),
         home_score: parsedHome,
         away_score: parsedAway,
         notes: formData.notes,
-        home_scorers: homeScorers, 
+        home_scorers: homeScorers,
         away_scorers: awayScorers,
       });
 
       toast.success("Result saved!");
-      router.push("/dashboard/fixture");
+      router.push("/dashboard/fixture/results");
     } catch (err: any) {
       console.error("Result error:", err.response?.data);
       const errorMsg =

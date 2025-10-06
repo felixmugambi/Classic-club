@@ -17,24 +17,15 @@ const navLinks = [
   {
     title: "Fixtures",
     submenu: [
-      { title: "League Table", href: "/fixtures/league-table" },
-      { title: "Add Fixtures to Calendar", href: "/fixtures/calendar" },
       { title: "All Fixtures", href: "/matches" },
       { title: "Results", href: "/results" },
+      { title: "League Table", href: "/fixtures/matches" },
     ],
   },
-  {
-    title: "Fans",
-    submenu: [
-      { title: "Fan Zone", href: "/fans/zone" },
-      { title: "Top Supporters", href: "/fans/supporters" },
-    ],
-  },
+
   {
     title: "Players",
     submenu: [
-      { title: "Team Roster", href: "/players/roster" },
-      { title: "Statistics", href: "/players/stats" },
       { title: "Meet Our Players", href: "/players" },
     ],
   },
@@ -57,23 +48,31 @@ const MainNavbar = () => {
     <nav className="bg-red-700 text-white px-4 py-3 z-40 relative">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Left */}
-        <div className="flex items-center gap-4">
-          {/* Hamburger button */}
+
+        <div className="ml-2">
           <button
             onClick={() => setMobileOpen(true)}
             className="md:hidden focus:outline-none"
           >
-            <FiMenu className="text-2xl" />
-          </button>
 
-          <Logo />
+            <FiMenu className="text-2xl" />
+
+
+          </button>
+          <Link href='/'>
+            <Logo />
+          </Link>
+        </div>
+        <div className="flex gap-4">
+          {/* Hamburger button */}
+
 
           {/* Desktop nav */}
-          <div className="hidden md:flex gap-6 text-sm font-medium relative">
+          <div className="hidden md:flex gap-3 text-sm font-medium relative">
             {navLinks.map((link) => (
               <div key={link.title} className="relative group">
                 <button className="relative group-hover:text-white transition">
-                  <span>{link.title}</span>
+                  <span className="text-xl px-2 font-bold">{link.title}</span>
                   <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-white group-hover:w-full transition-all duration-300"></span>
                 </button>
 
@@ -97,8 +96,8 @@ const MainNavbar = () => {
 
             {/* My Classic (auth-based) */}
             <div className="relative group">
-              <button className="relative group-hover:text-white transition">
-                <span>{isAuthenticated ? "My Classic" : "Already Signed Up?"}</span>
+              <button className="relative group-hover:text-white transition px-2">
+                <span className="text-xl px-2 font-bold">{isAuthenticated ? "My Classic" : "Already Signed Up?"}</span>
                 <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-white group-hover:w-full transition-all duration-300"></span>
               </button>
 
@@ -108,7 +107,7 @@ const MainNavbar = () => {
                     <Link href="/classic" className="block px-4 py-2 text-sm hover:text-clubRed">
                       My Profile
                     </Link>
-                    <Link href="/profile/edit" className="block px-4 py-2 text-sm hover:text-clubRed">
+                    <Link href="/classic" className="block px-4 py-2 text-sm hover:text-clubRed">
                       Edit Profile
                     </Link>
                   </>
@@ -128,16 +127,18 @@ const MainNavbar = () => {
         </div>
 
         {/* Right: Search or other icons */}
-        <div className="flex items-center gap-4">🔍</div>
+        <div className="flex items-center gap-4">
+
+        </div>
       </div>
 
       {/* Mobile Menu */}
       {mobileOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-60 z-50 md:hidden"
-        onClick={() => setMobileOpen(false)}
+          onClick={() => setMobileOpen(false)}
         >
           <div className="bg-white text-black w-72 h-full p-6 overflow-y-auto"
-          onClick={(e) => e.stopPropagation()} 
+            onClick={(e) => e.stopPropagation()}
           >
             {/* Close button */}
             <button
@@ -159,9 +160,8 @@ const MainNavbar = () => {
                   {link.title}
                   {link.submenu && (
                     <FiChevronDown
-                      className={`transition-transform ${
-                        openSubmenu === link.title ? "rotate-180" : ""
-                      }`}
+                      className={`transition-transform ${openSubmenu === link.title ? "rotate-180" : ""
+                        }`}
                     />
                   )}
                 </button>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { FaChevronDown, FaFutbol } from 'react-icons/fa';
 import API from '../../api/axios';
+import Loader from '../../components/common/Loader';
 
 type Fixture = {
   id: number;
@@ -28,6 +29,7 @@ type Result = {
 
 type GroupedFixtures = {
   [month: string]: Fixture[];
+
 };
 
 type Standing = {
@@ -70,7 +72,7 @@ export default function AllMatchesPage() {
   const [venueFilter, setVenueFilter] = useState('');
 
   const [activeTab, setActiveTab] = useState<'fixtures' | 'results' | 'table'>('fixtures');
-  const [showResultsDetails, setShowResultsDetails] = useState(false)
+  const [openResultID, setOpenResultID] = useState<number | null>(null)
   const [standings, setStandings] = useState<Standing[]>([]);
 
 
@@ -97,22 +99,36 @@ export default function AllMatchesPage() {
 
   useEffect(() => {
     const group: GroupedFixtures = {};
-    fixtures.forEach(fix => {
-      const { month } = getFormatted(fix.match_date, fix.match_time);
+    fixtures
+      .filter(fix => fix.status !== 'completed') // ✅ show only upcoming
+      .forEach(fix => {
+        const { month } = getFormatted(fix.match_date, fix.match_time);
 
-      const matchesMonth = !monthFilter || month === monthFilter;
-      const matchesType = !gameTypeFilter || fix.game_type === gameTypeFilter;
-      const matchesVenue = !venueFilter || (venueFilter === 'home' ? fix.is_home : !fix.is_home);
+        const matchesMonth = !monthFilter || month === monthFilter;
+        const matchesType = !gameTypeFilter || fix.game_type === gameTypeFilter;
+        const matchesVenue = !venueFilter || (venueFilter === 'home' ? fix.is_home : !fix.is_home);
 
-      if (matchesMonth && matchesType && matchesVenue) {
-        if (!group[month]) group[month] = [];
-        group[month].push(fix);
-      }
-    });
+        if (matchesMonth && matchesType && matchesVenue) {
+          if (!group[month]) group[month] = [];
+          group[month].push(fix);
+        }
+      });
     setFiltered(group);
   }, [fixtures, monthFilter, gameTypeFilter, venueFilter]);
 
+
   const months = Array.from(new Set(fixtures.map(fix => getFormatted(fix.match_date, fix.match_time).month)));
+
+  const filteredResults = results.filter(res => {
+    const { month } = getFormatted(res.fixture.match_date, res.fixture.match_time);
+
+    const matchesMonth = !monthFilter || month === monthFilter;
+    const matchesType = !gameTypeFilter || res.fixture.game_type === gameTypeFilter;
+    const matchesVenue = !venueFilter || (venueFilter === 'home' ? res.fixture.is_home : !res.fixture.is_home);
+
+    return matchesMonth && matchesType && matchesVenue;
+  });
+
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
@@ -160,7 +176,7 @@ export default function AllMatchesPage() {
       {activeTab === 'fixtures' && (
         <>
           {loading ? (
-            <p className="text-center text-gray-500">Loading fixtures...</p>
+            <Loader />
           ) : Object.keys(filtered).length === 0 ? (
             <p className="text-center text-gray-500 mt-20">No fixtures available</p>
           ) : (
@@ -178,7 +194,7 @@ export default function AllMatchesPage() {
                           <p className="font-bold text-black">{date} | {time}</p>
                           <p className="text-sm text-gray-600 mt-1">{home} <span className="text-gray-400">vs</span> {away}</p>
                         </div>
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${fix.status === 'completed' ? 'bg-green-600 text-white'
+                        <span className={`px-2 py-2 rounded-xl text-md font-semibold text-center ${fix.status === 'completed' ? 'bg-green-600 text-white'
                           : fix.status === 'postponed' ? 'bg-yellow-500 text-white'
                             : 'bg-blue-600 text-white'
                           }`}>
@@ -199,11 +215,11 @@ export default function AllMatchesPage() {
         <div>
           <h3 className="text-xl font-semibold mb-4">Match Results</h3>
           {loading ? (
-            <p className="text-center text-gray-500">Loading results...</p>
+            <Loader />
           ) : results.length === 0 ? (
             <p className="text-center text-gray-500 mt-20">No results available</p>
           ) : (
-            results.map(res => {
+            filteredResults.map(res => {
               const { date, time } = getFormatted(res.fixture.match_date, res.fixture.match_time);
               const home = res.fixture.is_home ? 'Classic FC' : res.fixture.opponent;
               const away = res.fixture.is_home ? res.fixture.opponent : 'Classic FC';
@@ -226,11 +242,11 @@ export default function AllMatchesPage() {
                     <p className="text-xl font-semibold">{away}</p>
                   </div>
                   <div className="flex justify-center items-center py-2 cursor-pointer"
-                    onClick={() => setShowResultsDetails(prev => !prev)}>
-                    <FaChevronDown className={`text-2xl transition-transform duration-200 ${showResultsDetails ? 'rotate-180' : ''
+                    onClick={() => setOpenResultID(prev => (prev === res.id ? null : res.id))}>
+                    <FaChevronDown className={`text-2xl transition-transform duration-200 ${openResultID === res.id ? 'rotate-180' : ''
                       }`} />
                   </div>
-                  {showResultsDetails &&
+                  {openResultID === res.id &&
                     <div className='flex items-center justify-between'>
                       <div>
                         {res.home_scorers?.map((scorer, index) => (
@@ -239,7 +255,6 @@ export default function AllMatchesPage() {
                             {scorer.name} {scorer.minute}</span>
                         ))}
                       </div>
-                      <p>FT</p>
                       <div>
                         {res.away_scorers?.map((scorer, index) => (
                           <span key={index} className='flex ml-2 items-center  text-lg'>
