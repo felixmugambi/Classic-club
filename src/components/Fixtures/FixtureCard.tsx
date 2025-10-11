@@ -2,6 +2,7 @@
 
 import React from "react";
 import Button from "../ui/Button";
+import Link from "next/link";
 
 type FixtureCardProps = {
   heading: string;
@@ -42,7 +43,10 @@ const FixtureCard = ({
       </div>
 
       <div className="mt-4">
+        <Link href="/matches">
         <Button variant="solid" fullWidth>More Info</Button>
+        </Link>
+        
       </div>
     </div>
   );

@@ -32,8 +32,8 @@ const navLinks = [
   {
     title: "More",
     submenu: [
-      { title: "About Us", href: "/more/about" },
-      { title: "Contact", href: "/more/contact" },
+      { title: "About Us", href: "/pages/about-the-club" },
+      { title: "history", href: "/pages/about-the-club/history" },
     ],
   },
 ];
@@ -49,19 +49,17 @@ const MainNavbar = () => {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Left */}
 
-        <div className="ml-2">
-          <button
-            onClick={() => setMobileOpen(true)}
-            className="md:hidden focus:outline-none"
-          >
-
-            <FiMenu className="text-2xl" />
-
-
-          </button>
+        <div className="flex ml-2">
           <Link href='/'>
             <Logo />
           </Link>
+
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="md:hidden focus:outline-none ml-2"
+          >
+            <FiMenu className="text-2xl" />
+          </button>
         </div>
         <div className="flex gap-4">
           {/* Hamburger button */}
