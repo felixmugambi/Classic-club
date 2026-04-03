@@ -1,12 +1,13 @@
 "use client";
 
+
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast";
-import API from "../../../api/axios"; // Adjust the path if needed
 import { useRouter } from "next/navigation";
 import LoadingButton from "../../../components/ui/LoadingButton";
+import API from "../../../api/axios";
 
 const ResetPasswordPage = () => {
   const [email, setEmail] = useState("");
@@ -18,20 +19,27 @@ const ResetPasswordPage = () => {
 
   const handleResetRequest = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     try {
       setLoading(true);
-      await API.post("/auth/request-reset-email/", { email });
-
-      toast.success("Reset email sent successfully")
-
-      router.push("/auth/request-password-submitted");
+  
+      const res = await API.post("/auth/check-user/", {
+        email,
+      });
+  
+      if (res.data.exists) {
+        router.push(`/auth/password-reset?email=${email}`);
+      }
+  
     } catch (err: any) {
-      toast.error("Failed to send reset email.");
+      toast.error(
+        err.response?.data?.message || "User with this email does not exist"
+      );
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-4 py-8">

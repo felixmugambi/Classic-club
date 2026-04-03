@@ -33,10 +33,10 @@ const SignupPage = () => {
       });
 
       
-      toast.success("Signup successful! Please check your email.");
+      toast.success("Signup successful! Welcome OnBoard");
 
       localStorage.setItem("pendingEmail", email);
-      router.push("/auth/confirm-email"); 
+      router.push("/auth/confirm-email");
     } catch (err: any) {
       console.error("Signup error:", err.response?.data || err.message);
 

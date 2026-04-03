@@ -142,7 +142,7 @@ const LoginPage = () => {
           </LoadingButton>
 
           <Link
-            href="/auth/reset-password"
+            href="/auth/password-forget"
             className="block text-center text-xs text-clubRed underline mt-1"
           >
             Forgot Password?

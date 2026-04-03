@@ -19,10 +19,7 @@ const ConfirmEmailSent = () => {
 
         <h2 className="text-xl font-bold mb-2">CONFIRM YOUR DETAILS</h2>
         <p className="text-gray-700 mb-4">
-          To complete your sign-up, simply click the activation link in the email we've just sent you. Be Sure to Check Spam & Junk.
-        </p>
-        <p className="text-sm text-gray-500 mb-6">
-          You can change your email preferences or unsubscribe at any time by following the links in the marketing emails that we send you.
+          To complete your sign-up, simply click the Login Link Below and you will be redirected to login in to Your Account.
         </p>
         <p className="text-sm text-gray-500 italic mb-6">
           Thank you for your continued amazing support!
