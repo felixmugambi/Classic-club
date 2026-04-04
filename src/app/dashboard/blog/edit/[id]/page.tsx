@@ -5,6 +5,13 @@ import { useParams, useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import API from '../../../../../api/axios';
 import ProtectedRoute from '../../../../../components/protect/ProtectedRoute';
+import dynamic from 'next/dynamic';
+import "react-quill-new/dist/quill.snow.css";
+
+const ReactQuill = dynamic(
+  () => import('react-quill-new'),
+  { ssr: false }
+);
 
 export default function EditBlogPage() {
   const router = useRouter();
@@ -16,22 +23,28 @@ export default function EditBlogPage() {
     content: '',
     image: null as File | null,
   });
+  const [currentImage, setCurrentImage] = useState<string | null>(null);
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   // Fetch blog data
   useEffect(() => {
+    if (!id) return;
+
     const fetchBlog = async () => {
       try {
         const res = await API.get(`/news/blogs/${id}/`);
         const data = res.data;
+
         setFormData({
-          title: data.title,
+          title: data.title || '',
           subtitle: data.subtitle || '',
-          content: data.content,
-          image: null, // Don’t preload existing image here
+          content: data.content || '',
+          image: null,
         });
+
+        setCurrentImage(data.image); // NEW
       } catch (err) {
         setError('Failed to load blog data.');
       }
@@ -48,10 +61,16 @@ export default function EditBlogPage() {
       const fileInput = e.target as HTMLInputElement;
       const file = fileInput.files?.[0];
       if (file) {
-        setFormData({ ...formData, image: file });
+        setFormData((prev) => ({
+          ...prev,
+          image: file,
+        }));
       }
     } else {
-      setFormData({ ...formData, [name]: value });
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
     }
   };
 
@@ -104,15 +123,27 @@ export default function EditBlogPage() {
             onChange={handleChange}
             className="w-full border p-2 rounded"
           />
-          <textarea
-            name="content"
-            placeholder="Blog content..."
-            rows={8}
-            value={formData.content}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            required
-          ></textarea>
+          {formData.content !== undefined && (
+            <ReactQuill
+              value={formData.content}
+              onChange={(val) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  content: val,
+                }))
+              }
+              theme="snow"
+              placeholder="Edit your blog content..."
+              className="bg-white rounded"
+              modules={{
+                toolbar: [
+                  ["bold", "italic", "underline", "blockquote"],
+                  [{ list: "ordered" }, { list: "bullet" }],
+                  ["clean"],
+                ],
+              }}
+            />
+          )}
           <input
             type="file"
             name="image"
@@ -120,6 +151,16 @@ export default function EditBlogPage() {
             className="w-full"
             accept="image/*"
           />
+          {currentImage && (
+            <div className="mt-2">
+              <p className="text-sm text-gray-500 mb-1">Current Image</p>
+              <img
+                src={currentImage}
+                alt="Current"
+                className="w-full max-h-60 object-cover rounded"
+              />
+            </div>
+          )}
           {error && <p className="text-red-500 text-sm">{error}</p>}
           <button
             type="submit"
