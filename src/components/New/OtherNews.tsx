@@ -47,14 +47,14 @@ const OtherNews = () => {
             <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-bold text-clubRed">Latest</h2>
                 <Link href="/news" className="flex items-center text-clubRed cursor-pointer hover:text-red-600 transition">
-                    <span className="font-medium mr-2">Check out More News</span>
+                    <span className="font-medium mr-2">More News</span>
                     <FaChevronRight className="text-lg" />
                 </Link>
             </div>
 
             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {
-                    blogs.slice(0, 6).map(((item) => (
+                    blogs.slice(0, 3).map(((item) => (
                         <Link href={`/news/${slugify(item.title)}`}>
                             <div className="bg-white rounded shadow hover:shadow-md transition group overflow-hidden flex flex-col">
                                 {/* Image wrapper with hover zoom */}
@@ -73,8 +73,8 @@ const OtherNews = () => {
                                         <div className="h-[2px] w-16 bg-clubRed transition-all duration-500 group-hover:w-full"></div>
                                     </div>
 
-                                    <h4 className="text-base font-semibold text-gray-800">{item.title}</h4>
-                                    <p className="text-sm text-gray-500 mt-1">{item.subtitle}</p>
+                                    <h4 className="text-base font-semibold text-gray-800 line-clamp-1">{item.title}</h4>
+                                    <p className="text-sm text-gray-500 mt-1 line-clamp-2">{item.subtitle}</p>
 
                                     {/* Bottom row */}
                                     <div className="flex justify-between items-center mt-3 text-xs text-gray-500">

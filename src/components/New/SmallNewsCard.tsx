@@ -23,8 +23,8 @@ const SmallNewsCard = ({ data }: { data: any }) => {
           <div className="h-[2px] w-16 bg-clubRed transition-all duration-500 group-hover:w-full"></div>
         </div>
 
-        <h4 className="text-base font-semibold text-gray-800">{data.title}</h4>
-        <p className="text-sm text-gray-500 mt-1 line-clamp-1">{data.subtitle}</p>
+        <h4 className="text-base font-semibold text-gray-800 line-clamp-1">{data.title}</h4>
+        <p className="text-sm text-gray-500 mt-1 line-clamp-2">{data.subtitle}</p>
 
         <p className="text-xs text-gray-600 mt-2 flex-grow">{data.desc}</p>
 

@@ -113,13 +113,13 @@ export default function PlayerDetailsPage() {
                     {activeTab === "profile" && (
                         <div>
                             <h3 className="font-semibold text-lg mb-2">Profile Biography</h3>
-                            <p>Player Biography goes here</p>
+                            <p>No Player Biography At the Moment</p>
                         </div>
                     )}
                     {activeTab === "stats" && (
                         <div>
                             <h3 className="font-semibold text-lg mb-2">Player Stats</h3>
-                            <p>Player Stats goes here</p>
+                            <p>No Player Stats At the Moment</p>
                         </div>
                     )}
                 </div>
