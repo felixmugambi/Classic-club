@@ -101,7 +101,7 @@ export default function NewsDetailPage() {
               <p className="text-gray-600 text-sm">by {blog.author_name || 'Admin'}</p>
             </div>
             <div className='flex items-center justify-center'>
-            <p className="text-gray-500 text-sm">Published on {new Date(blog.created_at).toLocaleDateString()}</p>
+              <p className="text-gray-500 text-sm">Published on {new Date(blog.created_at).toLocaleDateString()}</p>
             </div>
           </div>
 
@@ -176,9 +176,16 @@ export default function NewsDetailPage() {
         </div>
 
         {/* Subtitle + Content */}
+        {/* Subtitle + Content */}
         <div className="mt-3 space-y-4 text-center">
-          <h2 className="text-2xl font-semibold text-gray-800">{blog.subtitle}</h2>
-          <p className="text-justify text-gray-700 whitespace-pre-line">{blog.content}</p>
+          <h2 className="text-2xl font-semibold text-gray-800">
+            {blog.subtitle}
+          </h2>
+
+          <div
+            className="text-justify text-gray-700"
+            dangerouslySetInnerHTML={{ __html: blog.content }}
+          />
         </div>
 
 
