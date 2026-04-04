@@ -24,7 +24,7 @@ const SmallNewsCard = ({ data }: { data: any }) => {
         </div>
 
         <h4 className="text-base font-semibold text-gray-800">{data.title}</h4>
-        <p className="text-sm text-gray-500 mt-1 line-clamp-2">{data.subtitle}</p>
+        <p className="text-sm text-gray-500 mt-1 line-clamp-1">{data.subtitle}</p>
 
         <p className="text-xs text-gray-600 mt-2 flex-grow">{data.desc}</p>
 

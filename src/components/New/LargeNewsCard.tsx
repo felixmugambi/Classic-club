@@ -38,7 +38,7 @@ const LargeNewsCard = ({ data, layout }: { data: Blog, layout?: 'horizontal' | '
           </div>
           <div>
             <h3 className={`text-xl ${isFull ? 'md:text-2xl' : ''} font-bold text-gray-800`}>{data.title}</h3>
-            <p className="text-sm text-gray-500 mt-1">{data.subtitle}</p>
+            <p className="text-sm text-gray-500 mt-1 line-clamp-3">{data.subtitle}</p>
             <p className="text-sm text-gray-700 mt-3 line-clamp-3">{data.desc}</p>
           </div>
           <p className="text-sm text-gray-700 mt-3">{data.desc}</p>

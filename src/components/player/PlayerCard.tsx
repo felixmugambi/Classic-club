@@ -23,8 +23,8 @@ export default function PlayerCard({ player }: { player: Player }) {
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                 />
-                <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black via-transparent to-transparent">
-                    <p className="text-sm font-xl font-bold text-white">{player.jersey_number}</p>
+                <div className="absolute bottom-0 left-0 w-full p-3 bg-gradient-to-t from-black/100 via-black/50 to-transparent">
+                    <p className="text-xl font-xl font-bold text-white">{player.jersey_number}</p>
                     <h2 className="text-3xl font-bold text-white">{player.name.split(" ")[0]}</h2>
                     <h2 className="text-3xl font-bold text-white">{player.name.split(" ").slice(1).join(" ")}</h2>
                 </div>

@@ -79,13 +79,13 @@ export default function NewsDetailPage() {
 
   return (
     <>
-      <div className="relative w-full h-80 md:h-[400px] overflow-hidden rounded">
+      <div className="relative w-full h-80 md:h-[500px] overflow-hidden rounded">
         <img
           src={blog.image}
           alt={blog.title}
           className="w-full h-full object-cover"
         />
-        <div className="absolute bottom-0 left-0 w-full bg-opacity-50 text-white p-4">
+        <div className="absolute bg-gradient-to-t from-black/80 via-black/40 to-transparent bottom-0 left-0 w-full bg-opacity-50 text-white p-4">
           <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold text-center">{blog.title}</h1>
         </div>
       </div>
