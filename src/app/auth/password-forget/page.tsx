@@ -4,7 +4,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import LoadingButton from "../../../components/ui/LoadingButton";
 import API from "../../../api/axios";
@@ -43,7 +43,6 @@ const ResetPasswordPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-4 py-8">
-      <Toaster position="top-right" />
       <div className="w-full max-w-md bg-white p-6 rounded-lg shadow space-y-6">
         {/* Club Logo */}
         <div className="flex justify-center">

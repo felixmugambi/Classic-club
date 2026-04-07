@@ -3,9 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { FaFacebook, FaGoogle, FaApple } from "react-icons/fa";
-import toast, { Toaster } from "react-hot-toast";
+import { useRouter, useSearchParams } from "next/navigation";
+import toast from "react-hot-toast";
 import { useAuth } from "../../../components/context/AuthContext";
 import API from "../../../api/axios";
 import LoadingButton from "../../../components/ui/LoadingButton";
@@ -18,6 +17,9 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next");
 
 
   const { refreshUser } = useAuth(); // ✅ Import this from the context
@@ -43,7 +45,11 @@ const LoginPage = () => {
       // 🔥 Tell context to re-fetch user now that we're logged in
       await refreshUser();
 
-      router.push("/"); // or /dashboard or any other route
+      if (next) {
+        router.replace(next);
+      } else {
+        router.replace("/");
+      }
     } catch (err: any) {
       console.log("Login error response:", err.response?.data);
 
@@ -91,7 +97,6 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-4 py-8">
-      <Toaster position="top-right" />
       <div className="w-full max-w-md bg-white p-6 rounded-lg shadow space-y-6">
         {/* Club Logo */}
         <div className="flex justify-center">

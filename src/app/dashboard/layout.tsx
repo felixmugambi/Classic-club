@@ -23,7 +23,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       if (!user) {
         toast.error('Please log in to access the dashboard.');
         setAuthorized(false);
-        router.push('/auth/login');
+
+
+        router.push(`/auth/login?next=${pathname}`);
       } else if (
         !user.groups.includes('Admin') &&
         !user.groups.includes('Players_Manager') &&
@@ -37,7 +39,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         setAuthorized(true);
       }
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, pathname]);
 
   // Loading screen (while auth state is being checked)
   if (loading || authorized === null) {

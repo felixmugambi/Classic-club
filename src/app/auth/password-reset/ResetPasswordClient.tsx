@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import API from "../../../api/axios";
 import LoadingButton from "../../../components/ui/LoadingButton";
 
@@ -53,7 +53,6 @@ const ResetPasswordClient = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-4 py-8">
-      <Toaster position="top-right" />
 
       <div className="w-full max-w-md bg-white p-6 rounded-lg shadow space-y-6">
         <div className="flex justify-center">

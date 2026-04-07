@@ -3,9 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { FaFacebook, FaGoogle, FaApple } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 import publicAPI from "../../../api/publicAxios";
 import LoadingButton from "../../../components/ui/LoadingButton";
@@ -63,7 +62,6 @@ const SignupPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-4 py-8">
-      <Toaster position="bottom-right" toastOptions={{ duration: 3000 }} />
       <div className="w-full max-w-md bg-white p-6 rounded-lg shadow space-y-6">
         {/* Club Logo */}
         <div className="flex justify-center">
