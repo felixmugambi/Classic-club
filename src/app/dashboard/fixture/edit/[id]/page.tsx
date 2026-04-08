@@ -104,9 +104,9 @@ export default function EditFixturePage() {
             onChange={handleChange}
             className="w-full border p-2 rounded"
           >
-            <option value="League Game">League Game</option>
-            <option value="Friendly">Friendly</option>
-            <option value="Cup Match">Cup Match</option>
+            <option value="league">League Game</option>
+            <option value="friendly">Friendly</option>
+            <option value="cup">Cup Match</option>
           </select>
 
           <input
