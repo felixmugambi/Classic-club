@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { FaChevronDown, FaFutbol } from 'react-icons/fa';
 import API from '../../api/axios';
 import Loader from '../../components/common/Loader';
+import { useAuth } from '../../components/context/AuthContext';
+import toast from 'react-hot-toast';
 
 type Fixture = {
   id: number;
@@ -61,6 +63,25 @@ const getFormatted = (dateStr: string, timeStr: string) => {
   };
 };
 
+const addToCalendar = (fix: Fixture) => {
+  const start = new Date(`${fix.match_date}T${fix.match_time}`);
+  const end = new Date(start.getTime() + 2 * 60 * 60 * 1000); // 2 hours match
+
+  const formatDate = (date: Date) =>
+    date.toISOString().replace(/-|:|\.\d+/g, "");
+
+  const title = `Classic FC vs ${fix.opponent}`;
+  const location = fix.location;
+
+  const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
+    title
+  )}&dates=${formatDate(start)}/${formatDate(end)}&location=${encodeURIComponent(
+    location
+  )}`;
+
+  window.open(googleUrl, "_blank");
+};
+
 export default function AllMatchesPage() {
   const [fixtures, setFixtures] = useState<Fixture[]>([]);
   const [results, setResults] = useState<Result[]>([]);
@@ -75,6 +96,7 @@ export default function AllMatchesPage() {
   const [openResultID, setOpenResultID] = useState<number | null>(null)
   const [standings, setStandings] = useState<Standing[]>([]);
 
+  const { user } = useAuth()
 
 
   useEffect(() => {
@@ -193,13 +215,24 @@ export default function AllMatchesPage() {
                         <div>
                           <p className="font-bold text-black">{date} | {time}</p>
                           <p className="text-sm text-gray-600 mt-1">{home} <span className="text-gray-400">vs</span> {away}</p>
-                        </div>
-                        <span className={`px-2 py-2 rounded-xl text-md font-semibold text-center ${fix.status === 'completed' ? 'bg-green-600 text-white'
-                          : fix.status === 'postponed' ? 'bg-yellow-500 text-white'
-                            : 'bg-blue-600 text-white'
+                          <span className={`px-2 py-2 rounded-xl text-md font-semibold text-center ${fix.status === 'completed' ? 'text-green-600'
+                          : fix.status === 'postponed' ? 'text-yellow-500'
+                            : 'text-blue-600'
                           }`}>
                           {fix.status}
                         </span>
+                        </div>
+                        <div className="flex gap-2 items-center">
+                          {user && (
+                            <button
+                              onClick={() => addToCalendar(fix)}
+                              className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700"
+                            >
+                              Add Fixture to Calendar
+                            </button>
+                          )}
+                        </div>
+
                       </div>
                     );
                   })}
